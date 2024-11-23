@@ -1,9 +1,9 @@
-# golang-backend-boilerplate
+# aws-sqs-boilerplate-go
 
-[![Tests](https://github.com/gemyago/golang-backend-boilerplate/actions/workflows/run-tests.yml/badge.svg)](https://github.com/gemyago/golang-backend-boilerplate/actions/workflows/run-tests.yml)
-[![Coverage](https://raw.githubusercontent.com/gemyago/golang-backend-boilerplate/test-artifacts/coverage/golang-coverage.svg)](https://htmlpreview.github.io/?https://raw.githubusercontent.com/gemyago/golang-backend-boilerplate/test-artifacts/coverage/golang-coverage.html)
+[![Tests](https://github.com/gemyago/aws-sqs-boilerplate-go/actions/workflows/run-tests.yml/badge.svg)](https://github.com/gemyago/aws-sqs-boilerplate-go/actions/workflows/run-tests.yml)
+[![Coverage](https://raw.githubusercontent.com/gemyago/aws-sqs-boilerplate-go/test-artifacts/coverage/golang-coverage.svg)](https://htmlpreview.github.io/?https://raw.githubusercontent.com/gemyago/aws-sqs-boilerplate-go/test-artifacts/coverage/golang-coverage.html)
 
-Basic golang boilerplate for backend projects.
+Basic golang boilerplate for backend project that includes AWS SQS usage example.
 
 Key features:
 * [cobra](github.com/spf13/cobra) - CLI interactions
@@ -15,21 +15,6 @@ Key features:
 * [slog-http](github.com/samber/slog-http) is used to produce access logs
 * [testify](github.com/stretchr/testify) and [mockery](github.com/vektra/mockery) are used for tests
 * [gow](github.com/mitranim/gow) is used to watch and restart tests or server
-
-To be added:
-* Docker
-* Examples of APIs
-
-## Starting a new project
-
-* Clone the repo with a new name
-
-* Replace module name with desired one. Example:
-
-  ```bash
-  find . -name "*.go" -o -name "go.mod" | xargs sed -i 's|github.com/gemyago/golang-backend-boilerplate|<YOUR-MODULE-PATH>|g';
-  ```
-  Note: on osx you may have to install and use [gnu sed](https://formulae.brew.sh/formula/gnu-sed). In such case you may need to replace `sed` with `gsed` above.
 
 ## Project structure
 

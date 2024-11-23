@@ -7,8 +7,8 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/gemyago/golang-backend-boilerplate/internal/diag"
-	"github.com/gemyago/golang-backend-boilerplate/internal/services"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/gemyago/golang-backend-boilerplate/internal/di"
-	"github.com/gemyago/golang-backend-boilerplate/internal/diag"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/di"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
 	"go.uber.org/dig"
 )
 
