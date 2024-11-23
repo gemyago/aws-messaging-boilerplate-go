@@ -2,7 +2,7 @@
 
 # (optional; but recommended to set) 
 # When specified reported file paths will not contain local prefix in the output
-local-prefix: "github.com/gemyago/golang-backend-boilerplate"
+local-prefix: "github.com/gemyago/aws-sqs-boilerplate-go"
 
 # Holds coverage thresholds percentages, values should be in range [0-100]
 threshold:
