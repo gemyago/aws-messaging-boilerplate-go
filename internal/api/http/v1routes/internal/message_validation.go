@@ -10,7 +10,7 @@ import (
 // Below is to workaround unused imports.
 var _ = time.Time{}
 
-func NewPetValidator() FieldValidator[*Pet] {
+func NewMessageValidator() FieldValidator[*Message] {
 	validateId := NewSimpleFieldValidator[int64](
 		EnsureNonDefault[int64],
 	)
@@ -20,7 +20,7 @@ func NewPetValidator() FieldValidator[*Pet] {
 	validateComments := NewSimpleFieldValidator[string](
 	)
 	
-	return func(bindingCtx *BindingContext, value *Pet) {
+	return func(bindingCtx *BindingContext, value *Message) {
 		validateId(bindingCtx.Fork("id"), value.Id)
 		validateName(bindingCtx.Fork("name"), value.Name)
 		validateComments(bindingCtx.Fork("comments"), value.Comments)

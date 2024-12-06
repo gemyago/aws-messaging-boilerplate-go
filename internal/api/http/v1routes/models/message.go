@@ -13,6 +13,9 @@ var _ = time.Time{}
 var _ = json.Unmarshal
 var _ = fmt.Sprint
 
-type PetResponse struct { 
-	Data *Pet `json:"data"`
+// Message - Simple message object
+type Message struct { 
+	Id int64 `json:"id"`
+	Name string `json:"name"`
+	Comments string `json:"comments,omitempty"`
 }
