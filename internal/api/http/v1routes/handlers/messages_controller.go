@@ -15,6 +15,14 @@ var _ = time.Time{}
 var _ = json.Unmarshal
 var _ = fmt.Sprint
 
+// MessagesHealthCheckRequest represents params for healthCheck operation
+//
+// Request: POST /health.
+type MessagesHealthCheckRequest struct {
+	// Payload is parsed from request body and declared as payload.
+	Payload *Message
+}
+
 // MessagesPublishMessageRequest represents params for publishMessage operation
 //
 // Request: POST /messages/publish.
@@ -24,6 +32,13 @@ type MessagesPublishMessageRequest struct {
 }
 
 type MessagesController struct {
+	// POST /health
+	//
+	// Request type: MessagesHealthCheckRequest,
+	//
+	// Response type: none
+	HealthCheck httpHandlerFactory
+
 	// POST /messages/publish
 	//
 	// Request type: MessagesPublishMessageRequest,
@@ -33,6 +48,13 @@ type MessagesController struct {
 }
 
 type MessagesControllerBuilder struct {
+	// POST /health
+	//
+	// Request type: MessagesHealthCheckRequest,
+	//
+	// Response type: none
+	HandleHealthCheck actionBuilderVoidResult[*MessagesControllerBuilder, *MessagesHealthCheckRequest]
+
 	// POST /messages/publish
 	//
 	// Request type: MessagesPublishMessageRequest,
@@ -43,12 +65,19 @@ type MessagesControllerBuilder struct {
 
 func (c *MessagesControllerBuilder) Finalize() *MessagesController {
 	return &MessagesController{
+		HealthCheck: mustInitializeAction("healthCheck", c.HandleHealthCheck.httpHandlerFactory),
 		PublishMessage: mustInitializeAction("publishMessage", c.HandlePublishMessage.httpHandlerFactory),
 	}
 }
 
 func BuildMessagesController() *MessagesControllerBuilder {
 	controllerBuilder := &MessagesControllerBuilder{}
+
+	// POST /health
+	controllerBuilder.HandleHealthCheck.controllerBuilder = controllerBuilder
+	controllerBuilder.HandleHealthCheck.defaultStatusCode = 204
+	controllerBuilder.HandleHealthCheck.voidResult = true
+	controllerBuilder.HandleHealthCheck.paramsParserFactory = newParamsParserMessagesHealthCheck
 
 	// POST /messages/publish
 	controllerBuilder.HandlePublishMessage.controllerBuilder = controllerBuilder
@@ -60,5 +89,6 @@ func BuildMessagesController() *MessagesControllerBuilder {
 }
 
 func RegisterMessagesRoutes(controller *MessagesController, app *HTTPApp) {
+	app.router.HandleRoute("POST", "/health", controller.HealthCheck(app))
 	app.router.HandleRoute("POST", "/messages/publish", controller.PublishMessage(app))
 }

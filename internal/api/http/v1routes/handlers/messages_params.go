@@ -14,6 +14,30 @@ import (
 var _ = time.Time{}
 type _ func() Error
 
+type paramsParserMessagesHealthCheck struct {
+	bindPayload requestParamBinder[*http.Request, *Message]
+}
+
+func (p *paramsParserMessagesHealthCheck) parse(router httpRouter, req *http.Request) (*MessagesHealthCheckRequest, error) {
+	bindingCtx := BindingContext{}
+	reqParams := &MessagesHealthCheckRequest{}
+	// body params
+	p.bindPayload(bindingCtx.Fork("body"), readRequestBodyValue(req), &reqParams.Payload)
+	return reqParams, bindingCtx.AggregatedError()
+}
+
+func newParamsParserMessagesHealthCheck(app *HTTPApp) paramsParser[*MessagesHealthCheckRequest] {
+	return &paramsParserMessagesHealthCheck{
+		bindPayload: newRequestParamBinder(binderParams[*http.Request, *Message]{
+			required: true,
+			parseValue: parseSoloValueParamAsSoloValue(
+				parseJSONPayload[*Message],
+			),
+			validateValue: NewMessageValidator(),
+		}),
+	}
+}
+
 type paramsParserMessagesPublishMessage struct {
 	bindPayload requestParamBinder[*http.Request, *Message]
 }
