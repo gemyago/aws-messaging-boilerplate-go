@@ -71,6 +71,7 @@ func BuildMessagesController() *MessagesControllerBuilder {
 	controllerBuilder.HandleHealthCheck.controllerBuilder = controllerBuilder
 	controllerBuilder.HandleHealthCheck.defaultStatusCode = 204
 	controllerBuilder.HandleHealthCheck.voidResult = true
+	controllerBuilder.HandleHealthCheck.paramsParserFactory = makeVoidParamsParser
 
 	// POST /messages/publish
 	controllerBuilder.HandlePublishMessage.controllerBuilder = controllerBuilder
