@@ -10,6 +10,24 @@ import (
 	"go.uber.org/dig"
 )
 
+type RouterAdapter struct {
+	mux *http.ServeMux
+}
+
+func (r *RouterAdapter) PathValue(req *http.Request, paramName string) string {
+	return req.PathValue(paramName)
+}
+
+func (r *RouterAdapter) HandleRoute(method, pathPattern string, h http.Handler) {
+	r.mux.Handle(method+" "+pathPattern, h)
+}
+
+func NewMuxRouterAdapter(mux *http.ServeMux) *RouterAdapter {
+	return &RouterAdapter{
+		mux: mux,
+	}
+}
+
 type RootHandlerDeps struct {
 	dig.In
 
