@@ -23,5 +23,6 @@ threshold:
 exclude:
   # Exclude files or packages matching their paths
   paths:
+    - internal/api/http/v1routes/.* # generated code
     - testing.go
     - mock_.*.go
