@@ -15,13 +15,7 @@ var _ = time.Time{}
 var _ = json.Unmarshal
 var _ = fmt.Sprint
 
-// MessagesHealthCheckRequest represents params for healthCheck operation
-//
-// Request: POST /health.
-type MessagesHealthCheckRequest struct {
-	// Payload is parsed from request body and declared as payload.
-	Payload *Message
-}
+
 
 // MessagesPublishMessageRequest represents params for publishMessage operation
 //
@@ -32,9 +26,9 @@ type MessagesPublishMessageRequest struct {
 }
 
 type MessagesController struct {
-	// POST /health
+	// GET /health
 	//
-	// Request type: MessagesHealthCheckRequest,
+	// Request type: none
 	//
 	// Response type: none
 	HealthCheck httpHandlerFactory
@@ -48,12 +42,12 @@ type MessagesController struct {
 }
 
 type MessagesControllerBuilder struct {
-	// POST /health
+	// GET /health
 	//
-	// Request type: MessagesHealthCheckRequest,
+	// Request type: none
 	//
 	// Response type: none
-	HandleHealthCheck actionBuilderVoidResult[*MessagesControllerBuilder, *MessagesHealthCheckRequest]
+	HandleHealthCheck actionBuilderNoParamsVoidResult[*MessagesControllerBuilder]
 
 	// POST /messages/publish
 	//
@@ -73,11 +67,10 @@ func (c *MessagesControllerBuilder) Finalize() *MessagesController {
 func BuildMessagesController() *MessagesControllerBuilder {
 	controllerBuilder := &MessagesControllerBuilder{}
 
-	// POST /health
+	// GET /health
 	controllerBuilder.HandleHealthCheck.controllerBuilder = controllerBuilder
 	controllerBuilder.HandleHealthCheck.defaultStatusCode = 204
 	controllerBuilder.HandleHealthCheck.voidResult = true
-	controllerBuilder.HandleHealthCheck.paramsParserFactory = newParamsParserMessagesHealthCheck
 
 	// POST /messages/publish
 	controllerBuilder.HandlePublishMessage.controllerBuilder = controllerBuilder
@@ -89,6 +82,6 @@ func BuildMessagesController() *MessagesControllerBuilder {
 }
 
 func RegisterMessagesRoutes(controller *MessagesController, app *HTTPApp) {
-	app.router.HandleRoute("POST", "/health", controller.HealthCheck(app))
+	app.router.HandleRoute("GET", "/health", controller.HealthCheck(app))
 	app.router.HandleRoute("POST", "/messages/publish", controller.PublishMessage(app))
 }

@@ -12,17 +12,11 @@ servers:
   - url: http://localhost:8080
 paths:
   /health:
-    post:
+    get:
       summary: Health check endpoint
       operationId: healthCheck
       tags:
         - messages
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Message'
-        required: true
       responses:
         '204':
           description: Request succeeded
