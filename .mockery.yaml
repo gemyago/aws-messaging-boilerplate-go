@@ -1,9 +1,13 @@
 dir: "{{.InterfaceDirRelative}}"
 inpackage: true
+issue-845-fix: true
 filename: "mock_{{.InterfaceNameSnake}}.go"
 mock-build-tags: "!release"
 disable-version-string: true
 packages:
+  github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1controllers:
+    interfaces:
+      messagesCommands:
   log/slog:
     interfaces:
       Handler:
