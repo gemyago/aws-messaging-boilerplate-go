@@ -2,6 +2,7 @@ dir: "{{.InterfaceDirRelative}}"
 inpackage: true
 issue-845-fix: true
 filename: "mock_{{.InterfaceNameSnake}}.go"
+mockname: "mock{{.InterfaceName | camelcase}}"
 mock-build-tags: "!release"
 disable-version-string: true
 packages:
