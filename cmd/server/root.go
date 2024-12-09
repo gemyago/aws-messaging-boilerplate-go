@@ -10,14 +10,13 @@ import (
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/di"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services"
+	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"go.uber.org/dig"
 )
 
 func newRootCmd(container *dig.Container) *cobra.Command {
 	logsOutputFile := ""
-	jsonLogs := false
-	env := ""
 
 	cmd := &cobra.Command{
 		Use:   "server",
@@ -31,28 +30,23 @@ func newRootCmd(container *dig.Container) *cobra.Command {
 		"",
 		"Produce logs to file instead of stdout. Used for tests only.",
 	)
-	cmd.PersistentFlags().BoolVar(
-		&jsonLogs,
+	cmd.PersistentFlags().Bool(
 		"json-logs",
 		false,
 		"Indicates if logs should be in JSON format or text (default)",
 	)
-	cmd.PersistentFlags().StringVarP(
-		&env,
+	cmd.PersistentFlags().StringP(
 		"env",
 		"e",
 		"",
 		"Env that the process is running in.",
 	)
+	cfg := config.New()
+	lo.Must0(cfg.BindPFlags(cmd.PersistentFlags()))
 	cmd.PersistentPreRunE = func(cmd *cobra.Command, _ []string) error {
 		rootCtx := cmd.Context()
-
-		cfg, err := config.Load(config.NewLoadOpts().WithEnv(env))
+		err := config.Load(cfg, config.NewLoadOpts().WithEnv(cfg.GetString("env")))
 		if err != nil {
-			return err
-		}
-
-		if err = cfg.BindPFlag("defaultLogLevel", cmd.PersistentFlags().Lookup("log-level")); err != nil {
 			return err
 		}
 
@@ -63,7 +57,7 @@ func newRootCmd(container *dig.Container) *cobra.Command {
 
 		rootLogger := diag.SetupRootLogger(
 			diag.NewRootLoggerOpts().
-				WithJSONLogs(jsonLogs).
+				WithJSONLogs(cfg.GetBool("jsonLogs")).
 				WithLogLevel(logLevel).
 				WithOptionalOutputFile(logsOutputFile),
 		)
