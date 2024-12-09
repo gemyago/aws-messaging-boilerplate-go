@@ -44,7 +44,9 @@ func newRootCmd(container *dig.Container) *cobra.Command {
 		"",
 		"Env that the process is running in.",
 	)
-	cmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
+	cmd.PersistentPreRunE = func(cmd *cobra.Command, _ []string) error {
+		rootCtx := cmd.Context()
+
 		cfg, err := config.Load(config.NewLoadOpts().WithEnv(env))
 		if err != nil {
 			return err
@@ -73,7 +75,7 @@ func newRootCmd(container *dig.Container) *cobra.Command {
 			app.Register(container),
 
 			// services
-			services.Register(container),
+			services.Register(rootCtx, container),
 
 			di.ProvideAll(container,
 				di.ProvideValue(rootLogger),
