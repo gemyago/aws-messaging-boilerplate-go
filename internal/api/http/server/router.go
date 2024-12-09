@@ -24,14 +24,20 @@ func NewMuxRouterAdapter(mux *http.ServeMux) *MuxRouterAdapter {
 	}
 }
 
-type router interface {
-	Handle(pattern string, handler http.Handler)
-}
-
 type Group struct {
 	dig.Out
 
-	Mount MountFunc `group:"server"`
+	RegisterHandlers RegisterHandlersFunc `group:"server"`
 }
 
-type MountFunc func(r router)
+type RegisterHandlersFunc func()
+
+func MakeHandlersGroupFactory[TController any, THttpApp any](
+	registerFunc func(TController, THttpApp),
+) func(ctrl TController, app THttpApp) Group {
+	return func(ctrl TController, app THttpApp) Group {
+		return Group{
+			RegisterHandlers: func() { registerFunc(ctrl, app) },
+		}
+	}
+}

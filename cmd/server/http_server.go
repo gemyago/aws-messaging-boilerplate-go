@@ -7,9 +7,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/routes"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/server"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/di"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services"
 	"github.com/spf13/cobra"
@@ -89,13 +88,8 @@ func newHTTPServerCmd(container *dig.Container) *cobra.Command {
 	)
 	cmd.PreRunE = func(_ *cobra.Command, _ []string) error {
 		return errors.Join(
-			// http related dependencies
-			routes.Register(container),
-			di.ProvideAll(
-				container,
-				server.NewHTTPServer,
-				server.NewRootHandler,
-			),
+			server.Register(container),
+			http.Register(container),
 		)
 	}
 	cmd.RunE = func(_ *cobra.Command, _ []string) error {
