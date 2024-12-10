@@ -41,11 +41,14 @@ python -m venv .venv
 
 # Reload direnv
 direnv reload
+
+# Install python dependencies
+pip install -r requirements.txt
 ```
 
 Install/Update go dependencies: 
 ```sh
-# Install
+# Install 
 go mod download
 make tools
 
@@ -81,4 +84,11 @@ go run ./cmd/server/
 
 # Watch mode (double ^C to stop)
 gow run ./cmd/server/
+```
+
+## Useful commands
+
+```bash
+# Lock python dependencies (if updated)
+pip freeze > requirements.txt
 ```
