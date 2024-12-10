@@ -10,7 +10,8 @@ import (
 
 func Register(rootCtx context.Context, container *dig.Container) error {
 	return di.ProvideAll(container,
-		NewAWSConfigFactory(rootCtx),
+		newAWSConfigFactory(rootCtx),
+		newSqsClient,
 		NewTimeProvider,
 		di.ProvideValue(time.NewTicker),
 		NewShutdownHooks,
