@@ -11,8 +11,8 @@ import (
 var _ = time.Time{}
 
 func NewMessageValidator() FieldValidator[*Message] {
-	validateId := NewSimpleFieldValidator[int64](
-		EnsureNonDefault[int64],
+	validateId := NewSimpleFieldValidator[string](
+		EnsureNonDefault[string],
 	)
 	validateName := NewSimpleFieldValidator[string](
 		EnsureNonDefault[string],

@@ -15,7 +15,7 @@ var _ = fmt.Sprint
 
 // Message - Simple message object
 type Message struct { 
-	Id int64 `json:"id"`
+	Id string `json:"id"`
 	Name string `json:"name"`
 	Comments string `json:"comments,omitempty"`
 }
