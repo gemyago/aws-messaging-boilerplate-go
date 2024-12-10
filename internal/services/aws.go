@@ -25,7 +25,7 @@ func NewAWSConfigFactory(ctx context.Context) func(deps AWSConfigDeps) (aws.Conf
 }
 
 type Message struct {
-	Id       int64  `json:"id"` //nolint:revive,stylecheck // Id is used to match apigen generated code
+	Id       string `json:"id"` //nolint:revive,stylecheck // Id is used to match apigen generated code
 	Name     string `json:"name"`
 	Comments string `json:"comments,omitempty"`
 }
