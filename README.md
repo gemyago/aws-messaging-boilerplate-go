@@ -28,9 +28,22 @@ Key features:
 
 Please have the following tools installed: 
 * [direnv](https://github.com/direnv/direnv) 
+* [pyenv](https://github.com/pyenv/pyenv?tab=readme-ov-file#installation)
 * [gobrew](https://github.com/kevincobain2000/gobrew#install-or-update)
 
-Install/Update dependencies: 
+Python is required to run local setup script. 
+```bash
+# Install required python version
+pyenv install -s
+
+# Setup virtual environment
+python -m venv .venv
+
+# Reload direnv
+direnv reload
+```
+
+Install/Update go dependencies: 
 ```sh
 # Install
 go mod download
