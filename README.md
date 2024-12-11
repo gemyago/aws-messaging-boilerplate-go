@@ -56,6 +56,18 @@ make tools
 go get -u ./... && go mod tidy
 ```
 
+### Setup LocalStack
+
+LocalStack is used to run AWS services locally. To setup and provision the required resources, run the following command:
+
+```bash
+# Start LocalStack
+docker compose up -d
+
+# Provision resources
+./scripts/localstack.py provision
+```
+
 ### Lint and Tests
 
 Run all lint and tests:
