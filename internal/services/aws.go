@@ -15,25 +15,28 @@ import (
 //go:generate mockery --name=MessageSender --filename=mock_message_sender.go --config ../../.mockery-funcs.yaml
 
 type AWSConfigDeps struct {
-	Region string `config:"aws.region"`
+	Region       string `config:"aws.region"`
+	BaseEndpoint string `config:"aws.baseEndpoint" optional:"true"`
 }
 
 func newAWSConfigFactory(ctx context.Context) func(deps AWSConfigDeps) (aws.Config, error) {
 	return func(deps AWSConfigDeps) (aws.Config, error) {
-		cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(deps.Region))
+		opts := []func(*config.LoadOptions) error{
+			config.WithRegion(deps.Region),
+		}
+		// BaseEndpoint is defined for local/test modes only and points on localstack instance
+		if deps.BaseEndpoint != "" {
+			opts = append(opts,
+				config.WithBaseEndpoint(deps.BaseEndpoint),
+				config.WithCredentialsProvider(aws.AnonymousCredentials{}),
+			)
+		}
+		cfg, err := config.LoadDefaultConfig(ctx, opts...)
 		if err != nil {
 			return aws.Config{}, fmt.Errorf("failed to load aws configuration, %w", err)
 		}
 		return cfg, nil
 	}
-}
-
-type sqsClient interface {
-	SendMessage(
-		ctx context.Context,
-		params *sqs.SendMessageInput,
-		optFns ...func(*sqs.Options),
-	) (*sqs.SendMessageOutput, error)
 }
 
 type Message struct {
@@ -56,7 +59,7 @@ func NewMessageSender(deps MessageSenderDeps) MessageSender {
 	logger := deps.RootLogger.WithGroup("services.message-sender")
 	return func(ctx context.Context, message *Message) error {
 		body, err := json.Marshal(message)
-		if (err != nil) {
+		if err != nil {
 			return fmt.Errorf("failed to marshal message, %w", err)
 		}
 		res, err := deps.SqsClient.SendMessage(ctx, &sqs.SendMessageInput{

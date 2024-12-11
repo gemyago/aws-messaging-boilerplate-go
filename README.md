@@ -92,10 +92,10 @@ gow test -v ./internal/api/http/routes/ --run TestHealthCheckRoutes
 
 ```bash
 # Regular mode
-go run ./cmd/server/
+go run ./cmd/server/ http
 
 # Watch mode (double ^C to stop)
-gow run ./cmd/server/
+gow run ./cmd/server/ http
 ```
 
 ## Useful commands
