@@ -9,7 +9,7 @@
     "writeTimeout": "8s"
   },
   "aws": {
-    "region": "us-west-2",
+    "region": "us-east-1",
     "sqs": {
       "messagesQueueUrl": "set via env var: APP_SQS_MESSAGES_QUEUE_URL"
     }
