@@ -36,12 +36,6 @@ type sqsClient interface {
 	) (*sqs.SendMessageOutput, error)
 }
 
-func newSqsClient(cfg aws.Config) sqsClient {
-	return sqs.NewFromConfig(cfg)
-}
-
-var _ sqsClient = (*sqs.Client)(nil)
-
 type Message struct {
 	Id       string `json:"id"` //nolint:revive,stylecheck // Id is used to match apigen generated code
 	Name     string `json:"name"`
@@ -53,8 +47,8 @@ type MessageSender func(ctx context.Context, message *Message) error
 type MessageSenderDeps struct {
 	dig.In
 
-	RootLogger *slog.Logger
-	sqsClient
+	RootLogger       *slog.Logger
+	SqsClient        *sqs.Client
 	MessagesQueueURL string `config:"aws.sqs.messagesQueueUrl"`
 }
 
@@ -62,10 +56,10 @@ func NewMessageSender(deps MessageSenderDeps) MessageSender {
 	logger := deps.RootLogger.WithGroup("services.message-sender")
 	return func(ctx context.Context, message *Message) error {
 		body, err := json.Marshal(message)
-		if err != nil {
+		if (err != nil) {
 			return fmt.Errorf("failed to marshal message, %w", err)
 		}
-		res, err := deps.sqsClient.SendMessage(ctx, &sqs.SendMessageInput{
+		res, err := deps.SqsClient.SendMessage(ctx, &sqs.SendMessageInput{
 			MessageBody: aws.String(string(body)),
 			QueueUrl:    aws.String(deps.MessagesQueueURL),
 		})
