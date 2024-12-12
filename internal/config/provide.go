@@ -47,5 +47,10 @@ func Provide(container *dig.Container, cfg *viper.Viper) error {
 		provideConfigValue(cfg, "httpServer.readHeaderTimeout").asDuration(),
 		provideConfigValue(cfg, "httpServer.readTimeout").asDuration(),
 		provideConfigValue(cfg, "httpServer.writeTimeout").asDuration(),
+
+		// aws config
+		provideConfigValue(cfg, "aws.region").asString(),
+		provideConfigValue(cfg, "aws.baseEndpoint").asString(),
+		provideConfigValue(cfg, "aws.sqs.messagesQueueUrl").asString(),
 	)
 }

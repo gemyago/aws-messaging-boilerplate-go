@@ -15,8 +15,10 @@ import (
 //go:generate mockery --name=MessageSender --filename=mock_message_sender.go --config ../../.mockery-funcs.yaml
 
 type AWSConfigDeps struct {
-	Region       string `config:"aws.region"`
-	BaseEndpoint string `config:"aws.baseEndpoint" optional:"true"`
+	dig.In
+
+	Region       string `name:"config.aws.region"`
+	BaseEndpoint string `name:"config.aws.baseEndpoint" optional:"true"`
 }
 
 func newAWSConfigFactory(ctx context.Context) func(deps AWSConfigDeps) (aws.Config, error) {
@@ -52,7 +54,7 @@ type MessageSenderDeps struct {
 
 	RootLogger       *slog.Logger
 	SqsClient        *sqs.Client
-	MessagesQueueURL string `config:"aws.sqs.messagesQueueUrl"`
+	MessagesQueueURL string `name:"config.aws.sqs.messagesQueueUrl"`
 }
 
 func NewMessageSender(deps MessageSenderDeps) MessageSender {
@@ -69,7 +71,7 @@ func NewMessageSender(deps MessageSenderDeps) MessageSender {
 		if err != nil {
 			return fmt.Errorf("failed send message to sqs queue, %w", err)
 		}
-		logger.InfoContext(ctx, "message sent", slog.String("messageId", *res.MessageId))
+		logger.InfoContext(ctx, "Message sent", slog.String("messageId", *res.MessageId))
 		return nil
 	}
 }
