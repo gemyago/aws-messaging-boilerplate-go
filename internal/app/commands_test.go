@@ -7,6 +7,7 @@ import (
 
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/handlers"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/models"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services"
 	"github.com/go-faker/faker/v4"
 	"github.com/samber/lo"
@@ -14,13 +15,16 @@ import (
 )
 
 func TestCommands(t *testing.T) {
+	randomMessage := func() *models.Message {
+		return &models.Message{
+			Id:       faker.UUIDHyphenated(),
+			Name:     faker.Name(),
+			Comments: faker.Sentence(),
+		}
+	}
 	randomMessagesPublishMessageRequest := func() *handlers.MessagesPublishMessageRequest {
 		return &handlers.MessagesPublishMessageRequest{
-			Payload: &models.Message{
-				Id:       faker.UUIDHyphenated(),
-				Name:     faker.Name(),
-				Comments: faker.Sentence(),
-			},
+			Payload: randomMessage(),
 		}
 	}
 
@@ -34,6 +38,7 @@ func TestCommands(t *testing.T) {
 		return mockCommandDeps{
 			mockMessageSender: mockMessageSender,
 			deps: CommandsDeps{
+				RootLogger:  diag.RootTestLogger(),
 				SendMessage: mockMessageSender.Execute,
 			},
 		}
@@ -59,6 +64,17 @@ func TestCommands(t *testing.T) {
 			deps.mockMessageSender.EXPECT().Execute(ctx, lo.ToPtr(services.Message(*req.Payload))).Return(expectedErr)
 			err := commands.PublishMessage(ctx, req)
 			require.ErrorIs(t, err, expectedErr)
+		})
+	})
+
+	t.Run("ProcessMessage", func(t *testing.T) {
+		t.Run("should be noop", func(t *testing.T) {
+			ctx := context.Background()
+			deps := makeMockDeps(t)
+			commands := NewCommands(deps.deps)
+			msg := services.Message(*randomMessage())
+			err := commands.ProcessMessage(ctx, &msg)
+			require.NoError(t, err)
 		})
 	})
 }
