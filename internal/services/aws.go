@@ -111,14 +111,14 @@ type MessagesPollerDeps struct {
 type MessagesPoller struct {
 	queues               []pollerQueue
 	deps                 MessagesPollerDeps
-	maxProcessingWorkers int
+	maxProcessingWorkers int32
 	logger               *slog.Logger
 }
 
 func NewMessagesPoller(deps MessagesPollerDeps) *MessagesPoller {
 	return &MessagesPoller{
 		deps:                 deps,
-		maxProcessingWorkers: runtime.NumCPU(),
+		maxProcessingWorkers: int32(runtime.NumCPU()),
 		logger:               deps.RootLogger.WithGroup("services.messages-poller"),
 	}
 }
@@ -133,17 +133,34 @@ func (p *MessagesPoller) RegisterHandler(
 	})
 }
 
-func (p *MessagesPoller) Start(ctx context.Context) error {
-	type processingData struct {
-		rawMessage types.Message
-		handler    RawMessageHandler
+func (p *MessagesPoller) wrapRawMessageHandlerWithDeleteOnSuccess(
+	queueURL string,
+	handler RawMessageHandler,
+) RawMessageHandler {
+	return func(ctx context.Context, rawMessage types.Message) error {
+		err := handler(ctx, rawMessage)
+		if err != nil {
+			return fmt.Errorf("failed to handle message with target handler, %w", err)
+		}
+		if _, err = p.deps.SqsClient.DeleteMessage(ctx, &sqs.DeleteMessageInput{
+			QueueUrl:      aws.String(queueURL),
+			ReceiptHandle: rawMessage.ReceiptHandle,
+		}); err != nil {
+			return fmt.Errorf("failed to acknowledge message, %w", err)
+		}
+		return nil
 	}
-	p.logger.InfoContext(ctx, "Starting messages poller",
-		slog.Int("queues", len(p.queues)),
-		slog.Int("maxProcessingWorkers", p.maxProcessingWorkers),
-	)
-	processingWorkerChannels := make([]chan processingData, len(p.queues))
+}
 
+type processingData struct {
+	rawMessage types.Message
+	handler    RawMessageHandler
+}
+
+func (p *MessagesPoller) startProcessingWorkers(
+	ctx context.Context,
+) []chan processingData {
+	processingWorkerChannels := make([]chan processingData, len(p.queues))
 	for i := range processingWorkerChannels {
 		processingWorkerChannels[i] = make(chan processingData)
 		go func(ch <-chan processingData) {
@@ -154,26 +171,26 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 			}
 		}(processingWorkerChannels[i])
 	}
+	return processingWorkerChannels
+}
+
+func (p *MessagesPoller) Start(ctx context.Context) error {
+	p.logger.InfoContext(ctx, "Starting messages poller",
+		slog.Int("queues", len(p.queues)),
+		slog.Int64("maxProcessingWorkers", int64(p.maxProcessingWorkers)),
+	)
+	processingWorkerChannels := p.startProcessingWorkers(ctx)
 
 	for _, queue := range p.queues {
-		handleRawMessagesWithDeleteSucceeded := func(ctx context.Context, rawMessage types.Message) error {
-			err := queue.handler(ctx, rawMessage)
-			if err != nil {
-				return fmt.Errorf("failed to handle message with target handler, %w", err)
-			}
-			if _, err = p.deps.SqsClient.DeleteMessage(ctx, &sqs.DeleteMessageInput{
-				QueueUrl:      aws.String(queue.queueURL),
-				ReceiptHandle: rawMessage.ReceiptHandle,
-			}); err != nil {
-				return fmt.Errorf("failed to acknowledge message, %w", err)
-			}
-			return nil
-		}
+		handler := p.wrapRawMessageHandlerWithDeleteOnSuccess(
+			queue.queueURL,
+			queue.handler,
+		)
 		go func() {
 			for {
 				gotMessages, err := p.deps.SqsClient.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 					QueueUrl:            aws.String(queue.queueURL),
-					MaxNumberOfMessages: int32(p.maxProcessingWorkers),
+					MaxNumberOfMessages: p.maxProcessingWorkers,
 					WaitTimeSeconds:     p.deps.MaxPollWaitTimeSec,
 					VisibilityTimeout:   1, // configurable per queue
 				})
@@ -186,7 +203,7 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 					for _, ch := range processingWorkerChannels {
 						ch <- processingData{
 							rawMessage: rawMessage,
-							handler:    handleRawMessagesWithDeleteSucceeded,
+							handler:    handler,
 						}
 					}
 				}
