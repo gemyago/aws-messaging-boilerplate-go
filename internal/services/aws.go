@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"math"
 	"runtime"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -118,7 +119,7 @@ type MessagesPoller struct {
 func NewMessagesPoller(deps MessagesPollerDeps) *MessagesPoller {
 	return &MessagesPoller{
 		deps:                 deps,
-		maxProcessingWorkers: int32(runtime.NumCPU()),
+		maxProcessingWorkers: int32(math.Min(math.MaxInt32, float64(runtime.NumCPU()))),
 		logger:               deps.RootLogger.WithGroup("services.messages-poller"),
 	}
 }
