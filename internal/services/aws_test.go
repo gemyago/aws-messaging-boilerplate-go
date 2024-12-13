@@ -15,6 +15,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func newRandomMessage() *Message {
+	return &Message{
+		Id:       faker.UUIDHyphenated(),
+		Name:     faker.Name(),
+		Comments: faker.Sentence(),
+	}
+}
+
 func TestMessageSender(t *testing.T) {
 	appCfg := config.LoadTestConfig()
 	ctx := context.Background()
@@ -29,14 +37,6 @@ func TestMessageSender(t *testing.T) {
 		RootLogger:       diag.RootTestLogger(),
 		MessagesQueueURL: queueURL,
 	})
-
-	newRandomMessage := func() *Message {
-		return &Message{
-			Id:       faker.UUIDHyphenated(),
-			Name:     faker.Name(),
-			Comments: faker.Sentence(),
-		}
-	}
 
 	t.Run("should send the message to the queue", func(t *testing.T) {
 		message := newRandomMessage()
@@ -54,5 +54,52 @@ func TestMessageSender(t *testing.T) {
 		var receivedMessage Message
 		require.NoError(t, json.Unmarshal([]byte(*res.Messages[0].Body), &receivedMessage))
 		assert.Equal(t, message, &receivedMessage)
+	})
+}
+
+func TestMessagesPoller(t *testing.T) {
+	appCfg := config.LoadTestConfig()
+	rootCtx := context.Background()
+	awsCfg := lo.Must(newAWSConfigFactory(rootCtx)(AWSConfigDeps{
+		Region:       appCfg.GetString("aws.region"),
+		BaseEndpoint: appCfg.GetString("aws.baseEndpoint"),
+	}))
+	sqsClient := sqs.NewFromConfig(awsCfg)
+	queueURL := appCfg.GetString("aws.sqs.messagesQueueUrl")
+	sender := NewMessageSender(MessageSenderDeps{
+		SqsClient:        sqsClient,
+		RootLogger:       diag.RootTestLogger(),
+		MessagesQueueURL: queueURL,
+	})
+
+	t.Run("should receive the message from the queue", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		message := newRandomMessage()
+		lo.Must(sqsClient.PurgeQueue(ctx, &sqs.PurgeQueueInput{
+			QueueUrl: aws.String(queueURL),
+		}))
+		poller := NewMessagesPoller(MessagesPollerDeps{
+			SqsClient:  sqsClient,
+			RootLogger: diag.RootTestLogger(),
+		})
+		handledMessage := make(chan *Message)
+		poller.RegisterHandler(
+			queueURL,
+			NewRawMessageHandler(func(_ context.Context, message *Message) error {
+				handledMessage <- message
+				return nil
+			}),
+		)
+		go func() {
+			assert.NoError(t, poller.Start(ctx))
+		}()
+
+		err := sender(ctx, message)
+		require.NoError(t, err)
+
+		receivedMessage := <-handledMessage
+		assert.Equal(t, message, receivedMessage)
+
+		cancel()
 	})
 }

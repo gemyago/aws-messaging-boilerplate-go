@@ -5,10 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"runtime"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
 	"go.uber.org/dig"
 )
 
@@ -74,4 +77,113 @@ func NewMessageSender(deps MessageSenderDeps) MessageSender {
 		logger.InfoContext(ctx, "Message sent", slog.String("messageId", *res.MessageId))
 		return nil
 	}
+}
+
+type RawMessageHandler func(ctx context.Context, rawMessage types.Message) error
+
+func NewRawMessageHandler[TMessage any](
+	handler func(ctx context.Context, msg *TMessage) error,
+) RawMessageHandler {
+	return func(ctx context.Context, rawMessage types.Message) error {
+		return nil
+	}
+}
+
+type pollerQueue struct {
+	queueURL string
+	handler  RawMessageHandler
+}
+
+type MessagesPoller struct {
+	queues               []pollerQueue
+	client               *sqs.Client
+	maxProcessingWorkers int
+	logger               *slog.Logger
+}
+
+type MessagesPollerDeps struct {
+	dig.In
+
+	RootLogger *slog.Logger
+	SqsClient  *sqs.Client
+}
+
+func NewMessagesPoller(deps MessagesPollerDeps) *MessagesPoller {
+	return &MessagesPoller{
+		client:               deps.SqsClient,
+		maxProcessingWorkers: runtime.NumCPU(),
+		logger:               deps.RootLogger.WithGroup("services.messages-poller"),
+	}
+}
+
+func (p *MessagesPoller) RegisterHandler(
+	queueURL string,
+	handler RawMessageHandler,
+) {
+	p.queues = append(p.queues, pollerQueue{
+		queueURL: queueURL,
+		handler:  handler,
+	})
+}
+
+func (p *MessagesPoller) Start(ctx context.Context) error {
+	type processingData struct {
+		rawMessage types.Message
+		handler    RawMessageHandler
+	}
+	p.logger.InfoContext(ctx, "Starting messages poller",
+		slog.Int("queues", len(p.queues)),
+		slog.Int("maxProcessingWorkers", p.maxProcessingWorkers),
+	)
+	processingWorkerChannels := make([]chan processingData, len(p.queues))
+
+	for i := range processingWorkerChannels {
+		processingWorkerChannels[i] = make(chan processingData)
+		go func(ch <-chan processingData) {
+			for data := range ch {
+				if err := data.handler(ctx, data.rawMessage); err != nil {
+					p.logger.ErrorContext(ctx, "Failed to process message", diag.ErrAttr(err))
+				}
+			}
+		}(processingWorkerChannels[i])
+	}
+
+	for _, queue := range p.queues {
+		handleRawMessagesWithDeleteSucceeded := func(ctx context.Context, rawMessage types.Message) error {
+			err := queue.handler(ctx, rawMessage)
+			if err != nil {
+				return fmt.Errorf("failed to handle message with target handler, %w", err)
+			}
+			if _, err = p.client.DeleteMessage(ctx, &sqs.DeleteMessageInput{
+				QueueUrl:      aws.String(queue.queueURL),
+				ReceiptHandle: rawMessage.ReceiptHandle,
+			}); err != nil {
+				return fmt.Errorf("failed to delete message, %w", err)
+			}
+			return nil
+		}
+		go func() {
+			for {
+				gotMessages, err := p.client.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
+					QueueUrl:            aws.String(queue.queueURL),
+					MaxNumberOfMessages: int32(p.maxProcessingWorkers),
+					WaitTimeSeconds:     10,
+				})
+				if err != nil {
+					// TODO: Something like max retries or exponential backoff or some other strategy is required
+					p.logger.ErrorContext(ctx, "Failed to receive messages. Will retry", diag.ErrAttr(err))
+					continue
+				}
+				for _, rawMessage := range gotMessages.Messages {
+					for _, ch := range processingWorkerChannels {
+						ch <- processingData{
+							rawMessage: rawMessage,
+							handler:    handleRawMessagesWithDeleteSucceeded,
+						}
+					}
+				}
+			}
+		}()
+	}
+	return nil
 }
