@@ -85,7 +85,11 @@ func NewRawMessageHandler[TMessage any](
 	handler func(ctx context.Context, msg *TMessage) error,
 ) RawMessageHandler {
 	return func(ctx context.Context, rawMessage types.Message) error {
-		return nil
+		var message TMessage
+		if err := json.Unmarshal([]byte(*rawMessage.Body), &message); err != nil {
+			return fmt.Errorf("failed to unmarshal message, %w", err)
+		}
+		return handler(ctx, &message)
 	}
 }
 
@@ -94,23 +98,26 @@ type pollerQueue struct {
 	handler  RawMessageHandler
 }
 
-type MessagesPoller struct {
-	queues               []pollerQueue
-	client               *sqs.Client
-	maxProcessingWorkers int
-	logger               *slog.Logger
-}
-
 type MessagesPollerDeps struct {
 	dig.In
+
+	// config
+	MaxPollWaitTimeSec int32 `name:"config.aws.sqs.maxPollWaitTimeSec"`
 
 	RootLogger *slog.Logger
 	SqsClient  *sqs.Client
 }
 
+type MessagesPoller struct {
+	queues               []pollerQueue
+	deps                 MessagesPollerDeps
+	maxProcessingWorkers int
+	logger               *slog.Logger
+}
+
 func NewMessagesPoller(deps MessagesPollerDeps) *MessagesPoller {
 	return &MessagesPoller{
-		client:               deps.SqsClient,
+		deps:                 deps,
 		maxProcessingWorkers: runtime.NumCPU(),
 		logger:               deps.RootLogger.WithGroup("services.messages-poller"),
 	}
@@ -154,20 +161,21 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 			if err != nil {
 				return fmt.Errorf("failed to handle message with target handler, %w", err)
 			}
-			if _, err = p.client.DeleteMessage(ctx, &sqs.DeleteMessageInput{
+			if _, err = p.deps.SqsClient.DeleteMessage(ctx, &sqs.DeleteMessageInput{
 				QueueUrl:      aws.String(queue.queueURL),
 				ReceiptHandle: rawMessage.ReceiptHandle,
 			}); err != nil {
-				return fmt.Errorf("failed to delete message, %w", err)
+				return fmt.Errorf("failed to acknowledge message, %w", err)
 			}
 			return nil
 		}
 		go func() {
 			for {
-				gotMessages, err := p.client.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
+				gotMessages, err := p.deps.SqsClient.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 					QueueUrl:            aws.String(queue.queueURL),
 					MaxNumberOfMessages: int32(p.maxProcessingWorkers),
-					WaitTimeSeconds:     10,
+					WaitTimeSeconds:     p.deps.MaxPollWaitTimeSec,
+					VisibilityTimeout:   1, // configurable per queue
 				})
 				if err != nil {
 					// TODO: Something like max retries or exponential backoff or some other strategy is required

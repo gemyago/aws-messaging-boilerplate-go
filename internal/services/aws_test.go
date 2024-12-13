@@ -90,8 +90,10 @@ func TestMessagesPoller(t *testing.T) {
 				return nil
 			}),
 		)
+
+		startComplete := make(chan error)
 		go func() {
-			assert.NoError(t, poller.Start(ctx))
+			startComplete <- poller.Start(ctx)
 		}()
 
 		err := sender(ctx, message)
@@ -101,5 +103,6 @@ func TestMessagesPoller(t *testing.T) {
 		assert.Equal(t, message, receivedMessage)
 
 		cancel()
+		require.NoError(t, <-startComplete)
 	})
 }
