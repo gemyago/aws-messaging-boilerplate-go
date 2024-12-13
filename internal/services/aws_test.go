@@ -83,13 +83,13 @@ func TestMessagesPoller(t *testing.T) {
 			RootLogger: diag.RootTestLogger(),
 		})
 		handledMessage := make(chan *Message)
-		poller.RegisterHandler(
-			queueURL,
-			NewRawMessageHandler(func(_ context.Context, message *Message) error {
+		poller.RegisterQueue(MessagesPollerQueue{
+			QueueURL: queueURL,
+			Handler: NewRawMessageHandler(func(_ context.Context, message *Message) error {
 				handledMessage <- message
 				return nil
 			}),
-		)
+		})
 
 		startComplete := make(chan error)
 		go func() {

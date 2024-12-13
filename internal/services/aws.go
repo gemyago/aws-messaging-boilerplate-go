@@ -94,9 +94,14 @@ func NewRawMessageHandler[TMessage any](
 	}
 }
 
-type pollerQueue struct {
-	queueURL string
-	handler  RawMessageHandler
+type MessagesPollerQueue struct {
+	QueueURL string
+	Handler  RawMessageHandler
+
+	// The duration (in seconds) that the received messages are hidden
+	// from subsequent retrieve requests after being retrieved
+	// by a ReceiveMessage request.
+	VisibilityTimeout int32
 }
 
 type MessagesPollerDeps struct {
@@ -110,7 +115,7 @@ type MessagesPollerDeps struct {
 }
 
 type MessagesPoller struct {
-	queues               []pollerQueue
+	queues               []MessagesPollerQueue
 	deps                 MessagesPollerDeps
 	maxProcessingWorkers int32
 	logger               *slog.Logger
@@ -124,14 +129,8 @@ func NewMessagesPoller(deps MessagesPollerDeps) *MessagesPoller {
 	}
 }
 
-func (p *MessagesPoller) RegisterHandler(
-	queueURL string,
-	handler RawMessageHandler,
-) {
-	p.queues = append(p.queues, pollerQueue{
-		queueURL: queueURL,
-		handler:  handler,
-	})
+func (p *MessagesPoller) RegisterQueue(queue MessagesPollerQueue) {
+	p.queues = append(p.queues, queue)
 }
 
 func (p *MessagesPoller) wrapRawMessageHandlerWithDeleteOnSuccess(
@@ -184,16 +183,16 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 
 	for _, queue := range p.queues {
 		handler := p.wrapRawMessageHandlerWithDeleteOnSuccess(
-			queue.queueURL,
-			queue.handler,
+			queue.QueueURL,
+			queue.Handler,
 		)
 		go func() {
 			for {
 				gotMessages, err := p.deps.SqsClient.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
-					QueueUrl:            aws.String(queue.queueURL),
+					QueueUrl:            &queue.QueueURL,
 					MaxNumberOfMessages: p.maxProcessingWorkers,
 					WaitTimeSeconds:     p.deps.MaxPollWaitTimeSec,
-					VisibilityTimeout:   1, // configurable per queue
+					VisibilityTimeout:   queue.VisibilityTimeout,
 				})
 				if err != nil {
 					// TODO: Something like max retries or exponential backoff or some other strategy is required
