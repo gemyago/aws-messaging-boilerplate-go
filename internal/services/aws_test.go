@@ -105,4 +105,29 @@ func TestMessagesPoller(t *testing.T) {
 		cancel()
 		require.NoError(t, <-startComplete)
 	})
+
+	t.Run("should stop the poller if the context is canceled", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		lo.Must(sqsClient.PurgeQueue(ctx, &sqs.PurgeQueueInput{
+			QueueUrl: aws.String(queueURL),
+		}))
+		poller := NewMessagesPoller(MessagesPollerDeps{
+			SqsClient:  sqsClient,
+			RootLogger: diag.RootTestLogger(),
+		})
+		poller.RegisterQueue(MessagesPollerQueue{
+			QueueURL: queueURL,
+			Handler: NewRawMessageHandler(func(_ context.Context, _ *Message) error {
+				return nil
+			}),
+		})
+
+		startComplete := make(chan error)
+		go func() {
+			startComplete <- poller.Start(ctx)
+		}()
+
+		cancel()
+		require.NoError(t, <-startComplete)
+	})
 }

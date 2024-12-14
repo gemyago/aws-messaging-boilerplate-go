@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"math"
@@ -14,6 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
 	"go.uber.org/dig"
+	"golang.org/x/sync/errgroup"
 )
 
 //go:generate mockery --name=MessageSender --filename=mock_message_sender.go --config ../../.mockery-funcs.yaml
@@ -181,12 +183,14 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 	)
 	processingWorkerChannels := p.startProcessingWorkers(ctx)
 
+	grp := errgroup.Group{}
+
 	for _, queue := range p.queues {
 		handler := p.wrapRawMessageHandlerWithDeleteOnSuccess(
 			queue.QueueURL,
 			queue.Handler,
 		)
-		go func() {
+		grp.Go(func() error {
 			for {
 				gotMessages, err := p.deps.SqsClient.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 					QueueUrl:            &queue.QueueURL,
@@ -195,9 +199,16 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 					VisibilityTimeout:   queue.VisibilityTimeout,
 				})
 				if err != nil {
+					if errors.Is(err, context.Canceled) {
+						return nil
+					}
 					// TODO: Something like max retries or exponential backoff or some other strategy is required
-					p.logger.ErrorContext(ctx, "Failed to receive messages. Will retry", diag.ErrAttr(err))
-					continue
+					// p.logger.ErrorContext(ctx, "Failed to receive messages. Will retry", diag.ErrAttr(err))
+					return fmt.Errorf(
+						"failed to receive messages from queue %s: %w",
+						queue.QueueURL,
+						err,
+					)
 				}
 				for _, rawMessage := range gotMessages.Messages {
 					for _, ch := range processingWorkerChannels {
@@ -208,7 +219,8 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 					}
 				}
 			}
-		}()
+		})
 	}
-	return nil
+
+	return grp.Wait()
 }
