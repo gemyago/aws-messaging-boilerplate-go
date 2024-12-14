@@ -176,6 +176,22 @@ func (p *MessagesPoller) startProcessingWorkers(
 	return processingWorkerChannels
 }
 
+// Returns true if polling should be continued
+// otherwise returns false and error if polling should be stopped.
+func (p *MessagesPoller) handleReceiveError(
+	queueURL string,
+	err error,
+) (bool, error) {
+	if err == nil {
+		return true, nil
+	}
+	if errors.Is(err, context.Canceled) {
+		return false, nil
+	}
+	// TODO: Retry logic can be added here
+	return false, fmt.Errorf("failed to receive messages from queue %s: %w", queueURL, err)
+}
+
 func (p *MessagesPoller) Start(ctx context.Context) error {
 	p.logger.InfoContext(ctx, "Starting messages poller",
 		slog.Int("queues", len(p.queues)),
@@ -198,17 +214,9 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 					WaitTimeSeconds:     p.deps.MaxPollWaitTimeSec,
 					VisibilityTimeout:   queue.VisibilityTimeout,
 				})
-				if err != nil {
-					if errors.Is(err, context.Canceled) {
-						return nil
-					}
-					// TODO: Something like max retries or exponential backoff or some other strategy is required
-					// p.logger.ErrorContext(ctx, "Failed to receive messages. Will retry", diag.ErrAttr(err))
-					return fmt.Errorf(
-						"failed to receive messages from queue %s: %w",
-						queue.QueueURL,
-						err,
-					)
+				var shouldContinue bool
+				if shouldContinue, err = p.handleReceiveError(queue.QueueURL, err); !shouldContinue {
+					return err
 				}
 				for _, rawMessage := range gotMessages.Messages {
 					for _, ch := range processingWorkerChannels {
