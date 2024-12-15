@@ -13,6 +13,7 @@ func Register(rootCtx context.Context, container *dig.Container) error {
 	return di.ProvideAll(container,
 		newAWSConfigFactory(rootCtx),
 		sqs.NewFromConfig,
+		NewMessagesPoller,
 		NewMessageSender,
 		NewTimeProvider,
 		di.ProvideValue(time.NewTicker),

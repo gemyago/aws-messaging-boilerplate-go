@@ -60,7 +60,7 @@ type MessageSenderDeps struct {
 
 	RootLogger       *slog.Logger
 	SqsClient        *sqs.Client
-	MessagesQueueURL string `name:"config.aws.sqs.messagesQueueUrl"`
+	MessagesQueueURL string `name:"config.aws.sqs.messagesQueueURL"`
 }
 
 func NewMessageSender(deps MessageSenderDeps) MessageSender {

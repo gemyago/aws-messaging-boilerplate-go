@@ -10,6 +10,7 @@ import (
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/server"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/queues"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services"
 	"github.com/spf13/cobra"
 	"go.uber.org/dig"
@@ -22,6 +23,7 @@ type startServerParams struct {
 	RootLogger *slog.Logger
 
 	HTTPServer *server.HTTPServer
+	QueuesDeps queues.Deps
 
 	*services.ShutdownHooks
 
@@ -51,7 +53,8 @@ func startServer(params startServerParams) error {
 	signalCtx, cancel := signal.NotifyContext(rootCtx, unix.SIGINT, unix.SIGTERM)
 	defer cancel()
 
-	startupErrors := make(chan error, 1)
+	const startedComponents = 2
+	startupErrors := make(chan error, startedComponents)
 	go func() {
 		if params.noop {
 			rootLogger.InfoContext(signalCtx, "NOOP: Starting http server")
@@ -59,6 +62,14 @@ func startServer(params startServerParams) error {
 			return
 		}
 		startupErrors <- httpServer.Start(signalCtx)
+	}()
+	go func() {
+		if params.noop {
+			rootLogger.InfoContext(signalCtx, "NOOP: Starting polling queues")
+			startupErrors <- nil
+			return
+		}
+		startupErrors <- queues.StartPolling(signalCtx, params.QueuesDeps)
 	}()
 
 	var startupErr error

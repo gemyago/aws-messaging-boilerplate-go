@@ -11,7 +11,9 @@
   "aws": {
     "region": "us-east-1",
     "sqs": {
-      "messagesQueueUrl": "set via env var: APP_SQS_MESSAGES_QUEUE_URL"
+      "maxPollWaitTimeSec": 20,
+      "messagesQueueUrl": "set via env var: APP_SQS_MESSAGES_QUEUE_URL",
+      "messagesQueueVisibilityTimeoutSec": 10
     }
   }
 }
