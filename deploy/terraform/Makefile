@@ -34,8 +34,8 @@ terraform_version=$(shell cat .terraform-version)
 terraform_zip_name=terraform_$(terraform_version)_$(os)_$(arch).zip
 terraform_zip=$(tmp)/$(terraform_zip_name)
 terraform_val_file=deploy-env/$(DEPLOY_ENV)/values.tfvars
-terraform_backend_bucket_file=deploy-env/$(DEPLOY_ENV)/state-bucket.gcs.tfbackend
-terraform_backend_prefix_file=deploy-env/$(DEPLOY_ENV)/state-prefix.gcs.tfbackend
+terraform_backend_bucket_file=deploy-env/$(DEPLOY_ENV)/state-bucket.s3.tfbackend
+terraform_backend_prefix_file=deploy-env/$(DEPLOY_ENV)/state-prefix.s3.tfbackend
 terraform_vars=-var "app_name=$(app_name)" \
 			   -var-file=$(terraform_val_file)
 
@@ -73,7 +73,7 @@ ifeq ("$(wildcard $(terraform_val_file))","")
 endif
 
 $(terraform_backend_prefix_file):
-	echo 'prefix  = "$(app_name)-state"' > $@
+	echo 'key  = "$(app_name)-state"' > $@
 
 init: $(terraform) check-deploy-env $(terraform_backend_prefix_file)
 	$(terraform) init -backend-config=$(terraform_backend_bucket_file) -backend-config=$(terraform_backend_prefix_file)
