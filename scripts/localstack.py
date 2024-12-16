@@ -14,9 +14,21 @@ def create_queue(queue_name, region='us-east-2'):
     response = sqs.create_queue(QueueName=queue_name)
     print(f"Queue {queue_name} created with URL: {response['QueueUrl']}")
 
-def provision_queues(region):
+def create_bucket(bucket_name, region='us-east-2'):
+    s3 = boto3.client(
+        's3',
+        endpoint_url='http://localhost:4566',
+        region_name=region,
+        aws_access_key_id='dummy',
+        aws_secret_access_key='dummy'
+    )
+    s3.create_bucket(Bucket=bucket_name)
+    print(f"Bucket {bucket_name} created")
+
+def provision_resources(region):
     create_queue('messages-queue', region)
     create_queue('test-messages-queue', region)
+    create_bucket('terraform-local', region)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='LocalStack SQS Provisioning Script')
@@ -27,4 +39,4 @@ if __name__ == "__main__":
         parser.print_help()
     else:
         if args.command == 'provision':
-            provision_queues(region='us-east-1')
+            provision_resources(region='us-east-1')
