@@ -17,6 +17,14 @@ var _ = fmt.Sprint
 
 
 
+// MessagesProcessMessageRequest represents params for processMessage operation
+//
+// Request: POST /messages/process.
+type MessagesProcessMessageRequest struct {
+	// Payload is parsed from request body and declared as payload.
+	Payload *Message
+}
+
 // MessagesPublishMessageRequest represents params for publishMessage operation
 //
 // Request: POST /messages/publish.
@@ -32,6 +40,13 @@ type MessagesController struct {
 	//
 	// Response type: none
 	HealthCheck httpHandlerFactory
+
+	// POST /messages/process
+	//
+	// Request type: MessagesProcessMessageRequest,
+	//
+	// Response type: none
+	ProcessMessage httpHandlerFactory
 
 	// POST /messages/publish
 	//
@@ -49,6 +64,13 @@ type MessagesControllerBuilder struct {
 	// Response type: none
 	HandleHealthCheck actionBuilderNoParamsVoidResult[*MessagesControllerBuilder]
 
+	// POST /messages/process
+	//
+	// Request type: MessagesProcessMessageRequest,
+	//
+	// Response type: none
+	HandleProcessMessage actionBuilderVoidResult[*MessagesControllerBuilder, *MessagesProcessMessageRequest]
+
 	// POST /messages/publish
 	//
 	// Request type: MessagesPublishMessageRequest,
@@ -60,6 +82,7 @@ type MessagesControllerBuilder struct {
 func (c *MessagesControllerBuilder) Finalize() *MessagesController {
 	return &MessagesController{
 		HealthCheck: mustInitializeAction("healthCheck", c.HandleHealthCheck.httpHandlerFactory),
+		ProcessMessage: mustInitializeAction("processMessage", c.HandleProcessMessage.httpHandlerFactory),
 		PublishMessage: mustInitializeAction("publishMessage", c.HandlePublishMessage.httpHandlerFactory),
 	}
 }
@@ -73,6 +96,12 @@ func BuildMessagesController() *MessagesControllerBuilder {
 	controllerBuilder.HandleHealthCheck.voidResult = true
 	controllerBuilder.HandleHealthCheck.paramsParserFactory = makeVoidParamsParser
 
+	// POST /messages/process
+	controllerBuilder.HandleProcessMessage.controllerBuilder = controllerBuilder
+	controllerBuilder.HandleProcessMessage.defaultStatusCode = 202
+	controllerBuilder.HandleProcessMessage.voidResult = true
+	controllerBuilder.HandleProcessMessage.paramsParserFactory = newParamsParserMessagesProcessMessage
+
 	// POST /messages/publish
 	controllerBuilder.HandlePublishMessage.controllerBuilder = controllerBuilder
 	controllerBuilder.HandlePublishMessage.defaultStatusCode = 202
@@ -84,5 +113,6 @@ func BuildMessagesController() *MessagesControllerBuilder {
 
 func RegisterMessagesRoutes(controller *MessagesController, app *HTTPApp) {
 	app.router.HandleRoute("GET", "/health", controller.HealthCheck(app))
+	app.router.HandleRoute("POST", "/messages/process", controller.ProcessMessage(app))
 	app.router.HandleRoute("POST", "/messages/publish", controller.PublishMessage(app))
 }

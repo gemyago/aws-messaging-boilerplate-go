@@ -47,6 +47,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /messages/process:
+    post:
+      summary: Process the message
+      operationId: processMessage
+      tags:
+        - messages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+        required: true
+      responses:
+        '202':
+          description: Request succeeded
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Message:
