@@ -26,9 +26,8 @@ def create_bucket(bucket_name, region='us-east-2'):
     print(f"Bucket {bucket_name} created")
 
 def provision_resources(region):
-    create_queue('messages-queue', region)
-    create_queue('test-messages-queue', region)
-    create_bucket('terraform-local', region)
+    create_queue('test-messages-queue', region) # Used in tests
+    create_bucket('terraform-local', region) # Create a bucket for Terraform state
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='LocalStack SQS Provisioning Script')

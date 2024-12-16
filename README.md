@@ -66,6 +66,9 @@ docker compose up -d
 
 # Provision resources
 ./scripts/localstack.py provision
+make -C deploy/terraform init
+make -C deploy/terraform plan
+make -C deploy/terraform apply
 ```
 
 ### Lint and Tests
