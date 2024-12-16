@@ -1,37 +1,36 @@
 provider "aws" {
-  # TODO: Most of the below is related to localstack and need to be configured
-  access_key                  = "test"
-  secret_key                  = "test"
-  region                      = "us-east-1"
-  s3_use_path_style           = false
-  skip_credentials_validation = true
-  skip_metadata_api_check     = true
-  skip_requesting_account_id  = true
+  region = var.aws_primary_region
 
-  endpoints {
-    apigateway     = "http://localhost:4566"
-    apigatewayv2   = "http://localhost:4566"
-    cloudformation = "http://localhost:4566"
-    cloudwatch     = "http://localhost:4566"
-    dynamodb       = "http://localhost:4566"
-    ec2            = "http://localhost:4566"
-    es             = "http://localhost:4566"
-    elasticache    = "http://localhost:4566"
-    firehose       = "http://localhost:4566"
-    iam            = "http://localhost:4566"
-    kinesis        = "http://localhost:4566"
-    lambda         = "http://localhost:4566"
-    rds            = "http://localhost:4566"
-    redshift       = "http://localhost:4566"
-    route53        = "http://localhost:4566"
-    s3             = "http://s3.localhost.localstack.cloud:4566"
-    secretsmanager = "http://localhost:4566"
-    ses            = "http://localhost:4566"
-    sns            = "http://localhost:4566"
-    sqs            = "http://localhost:4566"
-    ssm            = "http://localhost:4566"
-    stepfunctions  = "http://localhost:4566"
-    sts            = "http://localhost:4566"
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
+
+  dynamic "endpoints" {
+    for_each = var.aws_endpoints != null ? [var.aws_endpoints] : []
+    content {
+      apigateway     = endpoints.value.apigateway
+      apigatewayv2   = endpoints.value.apigatewayv2
+      cloudformation = endpoints.value.cloudformation
+      cloudwatch     = endpoints.value.cloudwatch
+      dynamodb       = endpoints.value.dynamodb
+      ec2            = endpoints.value.ec2
+      es             = endpoints.value.es
+      elasticache    = endpoints.value.elasticache
+      firehose       = endpoints.value.firehose
+      iam            = endpoints.value.iam
+      kinesis        = endpoints.value.kinesis
+      lambda         = endpoints.value.lambda
+      rds            = endpoints.value.rds
+      redshift       = endpoints.value.redshift
+      route53        = endpoints.value.route53
+      s3             = endpoints.value.s3
+      secretsmanager = endpoints.value.secretsmanager
+      ses            = endpoints.value.ses
+      sns            = endpoints.value.sns
+      sqs            = endpoints.value.sqs
+      ssm            = endpoints.value.ssm
+      stepfunctions  = endpoints.value.stepfunctions
+      sts            = endpoints.value.sts
+    }
   }
 }
 
