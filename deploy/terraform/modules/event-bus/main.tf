@@ -15,3 +15,14 @@ resource "aws_cloudwatch_event_connection" "target_connection" {
     }
   }
 }
+
+resource "aws_cloudwatch_event_rule" "custom_source_events" {
+  name        = "capture-custom-source-events"
+  description = "Capture each AWS Console Sign In"
+  event_bus_name = aws_cloudwatch_event_bus.event_bus.name
+
+  event_pattern = jsonencode({
+    source: ["my.custom.source"],
+    detail-type = [ "myDetailType" ]
+  })
+}
