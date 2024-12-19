@@ -2,6 +2,7 @@ package di
 
 import (
 	"fmt"
+	"reflect"
 
 	"go.uber.org/dig"
 )
@@ -73,7 +74,9 @@ func ProvideWithArgErr[
 func ProvideAs[TSource any, TTarget any](source TSource) (TTarget, error) {
 	target, ok := any(source).(TTarget)
 	if !ok {
-		return target, fmt.Errorf("failed to cast %T to %T", source, target)
+		return target, fmt.Errorf("failed to cast %s to %s",
+			reflect.TypeOf((*TSource)(nil)).Elem(), reflect.TypeOf((*TTarget)(nil)).Elem(),
+		)
 	}
 	return target, nil
 }
