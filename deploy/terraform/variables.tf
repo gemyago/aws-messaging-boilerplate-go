@@ -25,7 +25,7 @@ variable "aws_secret_key" {
 
 variable "aws_endpoints" {
   description = "AWS service endpoints"
-  type        = object({
+  type = object({
     apigateway     = string
     apigatewayv2   = string
     cloudformation = string
@@ -50,5 +50,5 @@ variable "aws_endpoints" {
     stepfunctions  = string
     sts            = string
   })
-  default     = null
+  default = null
 }
