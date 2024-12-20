@@ -1,0 +1,2 @@
+bucket  = "<aws-account>-<region>-terraform-state-<user>"
+region  = "us-east-1"
