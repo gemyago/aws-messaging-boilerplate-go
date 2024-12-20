@@ -2,8 +2,8 @@
 
 # Optional. Common prefix for all resources. 
 # Useful to avoid name conflicts in shared accounts.
-# Please keep it short and alphanumeric.
-# resources_prefix = "mystuff"
+# Please keep it short and alphanumeric with dash or underscore in the end.
+# resources_prefix = "mystuff-"
 
 # Optional. Description to add to resources that support it.
 # Useful in shared accounts to identify the owner.

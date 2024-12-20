@@ -37,11 +37,13 @@ provider "aws" {
 
 // add messages queue
 resource "aws_sqs_queue" "messages" {
-  name = "messages-queue"
+  name = "${var.resources_prefix}messages-queue"
 }
 
 // add event bus
 module "event_bus" {
-  source   = "./modules/event-bus"
-  bus_name = "messages-bus"
+  source                = "./modules/event-bus"
+  bus_name              = "messages-bus"
+  resources_prefix      = var.resources_prefix
+  resources_description = var.resources_description
 }

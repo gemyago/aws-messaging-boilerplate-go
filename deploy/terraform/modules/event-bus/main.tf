@@ -1,11 +1,16 @@
+locals {
+  bus_name = "${var.resources_prefix}${var.bus_name}"
+}
+
 # Event bus
 resource "aws_cloudwatch_event_bus" "event_bus" {
-  name = var.bus_name
+  name = local.bus_name
+  description = "Event bus to route messages to the HTTP endpoint. ${var.resources_description}"
 }
 
 resource "aws_cloudwatch_event_connection" "target_connection" {
-  name               = "${var.bus_name}-target-connection"
-  description        = "Connection to the target"
+  name               = "${local.bus_name}-target-connection"
+  description        = "Connection to the target. ${var.resources_description}"
   authorization_type = "API_KEY"
 
   auth_parameters {
@@ -17,28 +22,28 @@ resource "aws_cloudwatch_event_connection" "target_connection" {
 }
 
 resource "aws_cloudwatch_event_rule" "custom_source_events" {
-  name        = "capture-custom-source-events"
-  description = "Capture each AWS Console Sign In"
+  name           = "${var.resources_prefix}capture-custom-source-events"
+  description    = "Capture events from a custom source. ${var.resources_description}"
   event_bus_name = aws_cloudwatch_event_bus.event_bus.name
 
   event_pattern = jsonencode({
-    source: ["my.custom.source"],
-    detail-type = [ "myDetailType" ]
+    source : ["my.custom.source"],
+    detail-type = ["myDetailType"]
   })
 }
 
 resource "aws_cloudwatch_event_api_destination" "test" {
-  name                             = "api-destination"
-  description                      = "An API Destination"
-  invocation_endpoint              = "http://host.docker.internal:8080/messages/process"
+  name                             = "${var.resources_prefix}api-destination"
+  description                      = "An API Destination. ${var.resources_description}"
+  invocation_endpoint              = "https://webhook.site/6011e29c-7f67-4865-9c30-0c7c3b13fca4"
   http_method                      = "POST"
   invocation_rate_limit_per_second = 20
   connection_arn                   = aws_cloudwatch_event_connection.target_connection.arn
 }
 
 resource "aws_cloudwatch_event_target" "test_target" {
-  rule      = aws_cloudwatch_event_rule.custom_source_events.name
-  arn       = aws_cloudwatch_event_api_destination.test.arn
+  rule           = aws_cloudwatch_event_rule.custom_source_events.name
+  arn            = aws_cloudwatch_event_api_destination.test.arn
   event_bus_name = aws_cloudwatch_event_bus.event_bus.name
   # input_path = "$.detail"
 

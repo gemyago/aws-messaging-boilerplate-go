@@ -3,15 +3,15 @@ variable "app_name" {
 }
 
 variable "resources_prefix" {
-  type = string
+  type        = string
   description = "Prefix resources with given string. Useful to avoid name conflicts."
-  default = ""
+  default     = ""
 }
 
 variable "resources_description" {
-  type = string
+  type        = string
   description = "Resources that support description field will have this value added."
-  default = ""
+  default     = ""
 }
 
 variable "ci_mode" {
