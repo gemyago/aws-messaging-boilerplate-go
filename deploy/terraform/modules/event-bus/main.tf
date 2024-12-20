@@ -40,5 +40,11 @@ resource "aws_cloudwatch_event_target" "test_target" {
   rule      = aws_cloudwatch_event_rule.custom_source_events.name
   arn       = aws_cloudwatch_event_api_destination.test.arn
   event_bus_name = aws_cloudwatch_event_bus.event_bus.name
-  input_path = "$.detail"
+  # input_path = "$.detail"
+
+  http_target {
+    header_parameters = {
+      "X-Message-ID" = "$.detail.id"
+    }
+  }
 }
