@@ -1,5 +1,14 @@
 # Adjust the below values as needed
 
+# Optional. Common prefix for all resources. 
+# Useful to avoid name conflicts in shared accounts.
+# Please keep it short and alphanumeric.
+# resources_prefix = "mystuff"
+
+# Optional. Description to add to resources that support it.
+# Useful in shared accounts to identify the owner.
+# resources_description = "Provisioned by $USER"
+
 # Primary region to deploy to
 aws_primary_region = "us-east-1"
 

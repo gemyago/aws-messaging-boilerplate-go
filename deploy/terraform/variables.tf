@@ -2,6 +2,18 @@ variable "app_name" {
   type = string
 }
 
+variable "resources_prefix" {
+  type = string
+  description = "Prefix resources with given string. Useful to avoid name conflicts."
+  default = ""
+}
+
+variable "resources_description" {
+  type = string
+  description = "Resources that support description field will have this value added."
+  default = ""
+}
+
 variable "ci_mode" {
   type        = bool
   description = "Value is true if running in CI mode. Should be used in very specific cases."
