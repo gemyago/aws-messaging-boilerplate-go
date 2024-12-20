@@ -140,6 +140,10 @@ make plan
 # Make sure the plan looks good. Apply the plan
 make apply
 
+# Cleanup provisioned resources if needed
+make plan_destroy
+make apply
+
 # Make sure to do it after the deployment
 unset DEPLOY_ENV
 ```
