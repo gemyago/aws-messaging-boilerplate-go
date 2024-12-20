@@ -101,6 +101,32 @@ go run ./cmd/server/ start
 gow run ./cmd/server/ start
 ```
 
+## Deployment
+
+This section describes how to deploy the application to AWS. Prior to deploying please make sure to initialize the AWS cli and configure the credentials. Please verify credentials by running the following command:
+```bash
+aws sts get-caller-identity
+```
+
+### Deployment configuration
+
+First step is to prepare terraform deployment configuration. Please place it under `deploy/terraform/deploy-env` directory. Please name the directory according to the environment you are deploying to. If you do not wish to commit the configuration, please add `-local` suffix to the directory name (e.g `my-aws-local`). Use template `deploy/terraform/deploy-env/template` as a starting point. 
+
+Key points to consider:
+* `state-bucket.s3.tfbackend` - specify the bucket name to store terraform state. The bucket must be created manually.
+  Make sure the bucket is private and has versioning enabled. You may use aws cli to create the bucket:
+  ```bash
+  export bucket_name=<bucket_name>
+  export region=<region>
+  aws s3api create-bucket --bucket $bucket_name --region $region
+  aws s3api put-bucket-versioning --bucket $bucket_name --versioning-configuration Status=Enabled
+  unset bucket_name region
+  ```
+  Make sure to pick globally unique bucket name. Example: `<aws-account>-<region>-terraform-state-<user>`
+
+```bash
+```
+
 ## Useful commands
 
 ```bash
