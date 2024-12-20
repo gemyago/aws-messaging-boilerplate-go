@@ -149,4 +149,15 @@ unset DEPLOY_ENV
 ```bash
 # Lock python dependencies (if updated)
 pip freeze > requirements.txt
+
+# Send custom event to AWS EventBridge
+aws events put-events --entries '[
+  {
+    "Source": "my.custom.source",
+    "DetailType": "myDetailType",
+    "Detail": "{\"id\": \"123\", \"name\": \"123\"}",
+    "EventBusName": "messages-bus"
+  }
+]'
 ```
+
