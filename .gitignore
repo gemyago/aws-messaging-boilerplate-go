@@ -7,3 +7,4 @@ tmp
 test.log
 .venv
 .localstack-data
+.envrc.local
