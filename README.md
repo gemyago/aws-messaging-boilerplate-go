@@ -112,19 +112,36 @@ aws sts get-caller-identity
 
 First step is to prepare terraform deployment configuration. Please place it under `deploy/terraform/deploy-env` directory. Please name the directory according to the environment you are deploying to. If you do not wish to commit the configuration, please add `-local` suffix to the directory name (e.g `my-aws-local`). Use template `deploy/terraform/deploy-env/template` as a starting point. 
 
-Key points to consider:
-* `state-bucket.s3.tfbackend` - specify the bucket name to store terraform state. The bucket must be created manually.
-  Make sure the bucket is private and has versioning enabled. You may use aws cli to create the bucket:
-  ```bash
-  export bucket_name=<bucket_name>
-  export region=<region>
-  aws s3api create-bucket --bucket $bucket_name --region $region
-  aws s3api put-bucket-versioning --bucket $bucket_name --versioning-configuration Status=Enabled
-  unset bucket_name region
-  ```
-  Make sure to pick globally unique bucket name. Example: `<aws-account>-<region>-terraform-state-<user>`
-
+Update `state-bucket.s3.tfbackend` - specify the bucket name to store terraform state. The bucket must be created manually. Make sure the bucket is private and has versioning enabled. You may use aws cli to create the bucket:
 ```bash
+export bucket_name=<bucket_name>
+export region=<region>
+aws s3api create-bucket --bucket $bucket_name --region $region
+aws s3api put-bucket-versioning --bucket $bucket_name --versioning-configuration Status=Enabled
+unset bucket_name region
+```
+Make sure to pick globally unique bucket name. Example: `<aws-account>-<region>-terraform-state-<user>`
+
+### Deploy
+
+To deploy terraform configuration, run the following commands (from deploy/terraform directory):
+```bash
+export DEPLOY_ENV=<env>
+
+# Remove previous state if needed
+# Obligatory if chancing DEPLOY_ENV
+rm -r -f .terraform
+
+make init
+
+# Prepare and review the plan
+make plan
+
+# Make sure the plan looks good. Apply the plan
+make apply
+
+# Make sure to do it after the deployment
+unset DEPLOY_ENV
 ```
 
 ## Useful commands
