@@ -4,7 +4,7 @@ locals {
 
 # Event bus
 resource "aws_cloudwatch_event_bus" "event_bus" {
-  name = local.bus_name
+  name        = local.bus_name
   description = "Event bus to route messages to the HTTP endpoint. ${var.resources_description}"
 }
 
@@ -41,10 +41,45 @@ resource "aws_cloudwatch_event_api_destination" "test" {
   connection_arn                   = aws_cloudwatch_event_connection.target_connection.arn
 }
 
+resource "aws_iam_role" "eventbridge_target_role" {
+  name        = "${local.bus_name}-eventbridge-target-role"
+  description = "Role for the EventBridge target. ${var.resources_description}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "events.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "eventbridge_target_policy" {
+  name = "${local.bus_name}-eventbridge-target-policy"
+  role = aws_iam_role.eventbridge_target_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "execute-api:Invoke",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 resource "aws_cloudwatch_event_target" "test_target" {
   rule           = aws_cloudwatch_event_rule.custom_source_events.name
   arn            = aws_cloudwatch_event_api_destination.test.arn
   event_bus_name = aws_cloudwatch_event_bus.event_bus.name
+  role_arn       = aws_iam_role.eventbridge_target_role.arn
   # input_path = "$.detail"
 
   http_target {
