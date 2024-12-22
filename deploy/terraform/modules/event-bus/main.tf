@@ -88,14 +88,15 @@ resource "aws_cloudwatch_event_target" "test_target" {
   arn            = aws_cloudwatch_event_api_destination.test.arn
   event_bus_name = aws_cloudwatch_event_bus.event_bus.name
   role_arn       = aws_iam_role.eventbridge_target_role.arn
-  # input_path = "$.detail"
+  input_path     = "$.detail"
 
   http_target {
     header_parameters = {
-      "X-Message-ID" = "$.id"
-      "X-Message-Type" = "$.detail-type"
+      # Below may not get substituted correctly in localstack setup
+      "X-Message-ID"     = "$.id"
+      "X-Message-Type"   = "$.detail-type"
       "X-Message-Source" = "$.source"
-      "X-Message-Time" = "$.time"
+      "X-Message-Time"   = "$.time"
     }
   }
 }
