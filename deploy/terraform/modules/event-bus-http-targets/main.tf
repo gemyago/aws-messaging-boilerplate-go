@@ -15,7 +15,7 @@ data "aws_caller_identity" "current" {}
 
 # TODO: This should transition to OAUTH2
 resource "aws_cloudwatch_event_connection" "target_connection" {
-  name               = "${var.bus_name}-target-connection"
+  name               = "${var.bus_name}-${var.app_name}-target-connection"
   description        = "Connection to the target. ${var.resources_description}"
   authorization_type = "API_KEY"
 
@@ -56,7 +56,7 @@ resource "random_id" "destination_name" {
   }
 
   byte_length = 4
-  prefix      = "${var.resources_prefix}-${var.app_name}-"
+  prefix      = "${var.resources_prefix}${var.app_name}-"
 
   keepers = {
     index    = each.key
