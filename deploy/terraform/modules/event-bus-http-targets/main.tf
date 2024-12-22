@@ -14,6 +14,8 @@ locals {
 data "aws_caller_identity" "current" {}
 
 # TODO: This should transition to OAUTH2
+# Private connection will be possible once below is done
+# https://github.com/hashicorp/terraform-provider-aws/issues/40384
 resource "aws_cloudwatch_event_connection" "target_connection" {
   name               = "${var.bus_name}-${var.app_name}-target-connection"
   description        = "Connection to the target. ${var.resources_description}"
