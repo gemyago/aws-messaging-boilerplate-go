@@ -92,7 +92,10 @@ resource "aws_cloudwatch_event_target" "test_target" {
 
   http_target {
     header_parameters = {
-      "X-Message-ID" = "$.detail.id"
+      "X-Message-ID" = "$.id"
+      "X-Message-Type" = "$.detail-type"
+      "X-Message-Source" = "$.source"
+      "X-Message-Time" = "$.time"
     }
   }
 }
