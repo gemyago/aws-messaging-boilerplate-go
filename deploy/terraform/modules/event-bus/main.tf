@@ -2,6 +2,8 @@ locals {
   bus_name = "${var.resources_prefix}${var.bus_name}"
 }
 
+data "aws_caller_identity" "current" {}
+
 # Event bus
 resource "aws_cloudwatch_event_bus" "event_bus" {
   name        = local.bus_name
@@ -22,6 +24,12 @@ resource "aws_cloudwatch_event_connection" "target_connection" {
 }
 
 resource "aws_cloudwatch_event_rule" "custom_source_events" {
+  lifecycle {
+    ignore_changes = [
+      tags, tags_all
+    ]
+  }
+
   name           = "${var.resources_prefix}capture-custom-source-events"
   description    = "Capture events from a custom source. ${var.resources_description}"
   event_bus_name = aws_cloudwatch_event_bus.event_bus.name
