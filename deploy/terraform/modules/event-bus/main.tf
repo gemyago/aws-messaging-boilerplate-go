@@ -76,8 +76,8 @@ resource "aws_iam_role_policy" "eventbridge_target_policy" {
     Statement = [
       {
         Effect   = "Allow",
-        Action   = "execute-api:Invoke",
-        Resource = "*"
+        Action   = "events:InvokeApiDestination",
+        Resource = aws_cloudwatch_event_api_destination.test.arn
       }
     ]
   })
