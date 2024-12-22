@@ -38,11 +38,3 @@ provider "aws" {
 resource "aws_sqs_queue" "messages" {
   name = "${var.resources_prefix}messages-queue"
 }
-
-module "event_bus" {
-  source                = "./modules/event-bus"
-  bus_name              = "messages-bus"
-  aws_primary_region    = var.aws_primary_region
-  resources_prefix      = var.resources_prefix
-  resources_description = var.resources_description
-}

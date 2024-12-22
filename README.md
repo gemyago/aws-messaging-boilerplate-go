@@ -160,8 +160,8 @@ pip freeze > requirements.txt
 # Send custom event to AWS EventBridge
 aws events put-events --entries '[
   {
-    "Source": "my.custom.source",
-    "DetailType": "myDetailType",
+    "Source": "aws-sqs-boilerplate-go",
+    "DetailType": "message",
     "Detail": "{\"id\": \"123\", \"name\": \"123\"}",
     "EventBusName": "messages-bus"
   }

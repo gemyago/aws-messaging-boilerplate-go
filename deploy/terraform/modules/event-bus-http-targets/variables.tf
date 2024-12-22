@@ -1,4 +1,7 @@
-# Event bus name
+variable "app_name" {
+  type = string
+}
+
 variable "bus_name" {
   type        = string
   description = "Name of the event bus"
@@ -19,4 +22,15 @@ variable "resources_description" {
   type        = string
   description = "Resources that support description field will have this value added."
   default     = ""
+}
+
+variable "http_targets" {
+  type = list(object({
+    event_source = string
+    detail_type  = string
+    endpoint     = string
+    method       = string
+    max_rps      = optional(number, 20)
+  }))
+  description = "List of HTTP targets to create"
 }
