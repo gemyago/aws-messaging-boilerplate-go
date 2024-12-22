@@ -126,6 +126,9 @@ Make sure to pick globally unique bucket name. Example: `<aws-account>-<region>-
 
 To deploy terraform configuration, run the following commands (from deploy/terraform directory):
 ```bash
+# Set the environment to deploy to
+# If not set, the default env is local which points
+# to localstack
 export DEPLOY_ENV=<env>
 
 # Remove previous state if needed

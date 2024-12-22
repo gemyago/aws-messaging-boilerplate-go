@@ -44,6 +44,7 @@ resource "aws_sqs_queue" "messages" {
 module "event_bus" {
   source                = "./modules/event-bus"
   bus_name              = "messages-bus"
+  aws_primary_region    = var.aws_primary_region
   resources_prefix      = var.resources_prefix
   resources_description = var.resources_description
 }
