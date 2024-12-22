@@ -126,6 +126,7 @@ resource "aws_cloudwatch_event_target" "test_target" {
   http_target {
     header_parameters = {
       # Below may not get substituted correctly in localstack setup
+      # May be fixed with https://github.com/localstack/localstack/issues/12062
       "X-Message-ID"     = "$.id"
       "X-Message-Type"   = "$.detail-type"
       "X-Message-Source" = "$.source"
