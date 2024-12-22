@@ -168,3 +168,6 @@ aws events put-events --entries '[
 ]'
 ```
 
+## Monitoring
+
+Configured invocation rate and actual invocation rate. Alarm if exceeding, meaning scale-up is needed.
