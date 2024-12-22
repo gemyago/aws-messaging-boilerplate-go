@@ -163,7 +163,7 @@ aws events put-events --entries '[
     "Source": "aws-sqs-boilerplate-go",
     "DetailType": "message",
     "Detail": "{\"id\": \"123\", \"name\": \"123\"}",
-    "EventBusName": "messages-bus"
+    "EventBusName": "app-events"
   }
 ]'
 ```
