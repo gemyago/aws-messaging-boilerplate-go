@@ -158,6 +158,7 @@ unset DEPLOY_ENV
 pip freeze > requirements.txt
 
 # Send custom event to AWS EventBridge
+# Use awslocal to send event to localstack
 aws events put-events --entries '[
   {
     "Source": "aws-sqs-boilerplate-go",
