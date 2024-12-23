@@ -1,3 +1,5 @@
+# In real world scenario the topic may be provisioned by producer service
+# In this case such topics should be specified as a variables
 resource "aws_sns_topic" "messages" {
   name = "${var.resources_prefix}messages"
 }

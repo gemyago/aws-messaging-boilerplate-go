@@ -1,10 +1,13 @@
+# In real world scenario the bus itself will be very likely 
+# provisioned by a separate "infrastructure" like project. 
+# Each "consumer" project will then just have "attachments" to it.
 resource "aws_cloudwatch_event_bus" "event_bus" {
   name        = "${var.resources_prefix}app-events"
   description = "Example event bus to play around with. ${var.resources_description}"
 }
 
 module "event_bus_http_targets" {
-  source                = "./modules/event-bus-http-targets"
+  source                = "../modules/event-bus-http-targets"
   app_name              = var.app_name
   bus_name              = aws_cloudwatch_event_bus.event_bus.name
   aws_primary_region    = var.aws_primary_region
