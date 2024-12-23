@@ -1,0 +1,13 @@
+resource "aws_sns_topic" "messages" {
+  name = "${var.resources_prefix}messages"
+}
+
+resource "aws_sns_topic_subscription" "messages" {
+  topic_arn = aws_sns_topic.messages.arn
+  protocol  = "sqs"
+  endpoint  = aws_sqs_queue.messages.arn
+}
+
+resource "aws_sqs_queue" "messages" {
+  name = "${var.resources_prefix}messages-queue"
+}
