@@ -17,3 +17,8 @@ variable "resources_description" {
 variable "aws_primary_region" {
   type = string
 }
+
+variable "local_stack_env" {
+  type        = bool
+  description = "Local stack environment"
+}

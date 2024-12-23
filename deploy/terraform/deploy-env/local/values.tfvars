@@ -26,3 +26,4 @@ aws_endpoints = {
   stepfunctions  = "http://localhost:4566"
   sts            = "http://localhost:4566"
 }
+local_stack_env = true

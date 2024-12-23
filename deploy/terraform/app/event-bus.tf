@@ -1,9 +1,14 @@
 # In real world scenario the bus itself will be very likely 
 # provisioned by a separate "infrastructure" like project. 
 # Each "consumer" project will then just have "attachments" to it.
+#
+# The local stack has an issue of not assigning description. This leads
+# to a situation where plan is producing a constant diff on the description.
+# So we have to skip the description in local stack environment.
+# Maybe fixed by https://github.com/localstack/localstack/issues/12065
 resource "aws_cloudwatch_event_bus" "event_bus" {
   name        = "${var.resources_prefix}app-events"
-  description = "Example event bus to play around with. ${var.resources_description}"
+  description = var.local_stack_env ? "" : "Example event bus to play around with. ${var.resources_description}"
 }
 
 module "event_bus_http_targets" {

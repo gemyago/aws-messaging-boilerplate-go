@@ -64,3 +64,9 @@ variable "aws_endpoints" {
   })
   default = null
 }
+
+variable "local_stack_env" {
+  description = "Indicates if the environment is local stack. Used mainly to workaround local stack issues."
+  type        = bool
+  default     = false
+}
