@@ -25,8 +25,8 @@ func Test_provideConfigValue(t *testing.T) {
 
 		type configReceiver struct {
 			dig.In
-			IntVal   int `name:"config.int-cfg-key"`
-			Int32Val int `name:"config.int-32-cfg-key"`
+			IntVal   int   `name:"config.int-cfg-key"`
+			Int32Val int32 `name:"config.int-32-cfg-key"`
 		}
 
 		container := dig.New()
@@ -37,7 +37,7 @@ func Test_provideConfigValue(t *testing.T) {
 
 		require.NoError(t, container.Invoke(func(receiver configReceiver) {
 			require.Equal(t, cfg.GetInt(intCfgKey), receiver.IntVal)
-			require.Equal(t, cfg.GetInt32(int32CfgKey), int32(receiver.Int32Val))
+			require.Equal(t, cfg.GetInt32(int32CfgKey), receiver.Int32Val)
 		}))
 	})
 
