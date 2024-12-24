@@ -27,3 +27,4 @@ aws_endpoints = {
   sts            = "http://localhost:4566"
 }
 local_stack_env = true
+setup_test_env  = true
