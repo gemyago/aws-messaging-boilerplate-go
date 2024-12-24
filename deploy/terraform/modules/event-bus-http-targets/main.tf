@@ -112,7 +112,7 @@ resource "aws_iam_role_policy" "http_target_role_policy" {
   })
 }
 
-resource "aws_cloudwatch_event_target" "test_target" {
+resource "aws_cloudwatch_event_target" "api_target" {
   for_each = {
     for index, target in local.http_targets :
     target.key => target

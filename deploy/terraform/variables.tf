@@ -109,3 +109,9 @@ variable "local_stack_env" {
   type        = bool
   default     = false
 }
+
+variable "setup_test_env" {
+  description = "Indicates if additional resources for testing should be created."
+  type        = bool
+  default     = false
+}

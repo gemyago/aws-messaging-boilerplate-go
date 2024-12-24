@@ -3,17 +3,6 @@
 import argparse
 import boto3
 
-def create_queue(queue_name, region='us-east-2'):
-    sqs = boto3.client(
-        'sqs',
-        endpoint_url='http://localhost:4566',
-        region_name=region,
-        aws_access_key_id='dummy',
-        aws_secret_access_key='dummy'
-    )
-    response = sqs.create_queue(QueueName=queue_name)
-    print(f"Queue {queue_name} created with URL: {response['QueueUrl']}")
-
 def create_bucket(bucket_name, region='us-east-2'):
     s3 = boto3.client(
         's3',
@@ -26,7 +15,6 @@ def create_bucket(bucket_name, region='us-east-2'):
     print(f"Bucket {bucket_name} created")
 
 def provision_resources(region):
-    create_queue('test-messages-queue', region) # Used in tests
     create_bucket('terraform-local', region) # Create a bucket for Terraform state
 
 if __name__ == "__main__":
