@@ -50,7 +50,9 @@ func TestAWSMessageSender(t *testing.T) {
 		require.NoError(t, err)
 
 		res, err := sqsClient.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
-			QueueUrl: aws.String(queueURL),
+			QueueUrl:            aws.String(queueURL),
+			MaxNumberOfMessages: 1,
+			WaitTimeSeconds:     1,
 		})
 		require.NoError(t, err)
 		require.Len(t, res.Messages, 1)

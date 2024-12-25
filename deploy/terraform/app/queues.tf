@@ -5,9 +5,10 @@ resource "aws_sns_topic" "messages" {
 }
 
 resource "aws_sns_topic_subscription" "messages" {
-  topic_arn = aws_sns_topic.messages.arn
-  protocol  = "sqs"
-  endpoint  = aws_sqs_queue.messages.arn
+  topic_arn            = aws_sns_topic.messages.arn
+  protocol             = "sqs"
+  endpoint             = aws_sqs_queue.messages.arn
+  raw_message_delivery = true
 }
 
 resource "aws_sqs_queue" "messages" {
