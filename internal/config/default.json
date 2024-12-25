@@ -10,6 +10,9 @@
   },
   "aws": {
     "region": "us-east-1",
+    "sns": {
+      "messagesTopicArn": "set via env var: APP_SNS_MESSAGES_TOPIC_ARN"
+    },
     "sqs": {
       "maxPollWaitTimeSec": 20,
       "messagesQueueUrl": "set via env var: APP_SQS_MESSAGES_QUEUE_URL",

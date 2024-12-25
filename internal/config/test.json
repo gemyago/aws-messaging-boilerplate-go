@@ -2,6 +2,9 @@
   "defaultLogLevel": "DEBUG",
   "aws": {
     "baseEndpoint": "http://localhost:4566",
+    "sns": {
+      "messagesTopicArn": "arn:aws:sns:us-east-1:000000000000:test-messages"
+    },
     "sqs": {
       "messagesQueueUrl": "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/test-messages-queue"
     }

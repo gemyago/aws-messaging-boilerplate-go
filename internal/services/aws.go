@@ -11,6 +11,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
@@ -59,8 +60,8 @@ type MessageSenderDeps struct {
 	dig.In
 
 	RootLogger       *slog.Logger
-	SqsClient        *sqs.Client
-	MessagesQueueURL string `name:"config.aws.sqs.messagesQueueURL"`
+	SnsClient        *sns.Client
+	MessagesTopicARN string `name:"config.aws.sqs.messagesTopicARN"`
 }
 
 func NewMessageSender(deps MessageSenderDeps) MessageSender {
@@ -70,9 +71,9 @@ func NewMessageSender(deps MessageSenderDeps) MessageSender {
 		if err != nil {
 			return fmt.Errorf("failed to marshal message, %w", err)
 		}
-		res, err := deps.SqsClient.SendMessage(ctx, &sqs.SendMessageInput{
-			MessageBody: aws.String(string(body)),
-			QueueUrl:    aws.String(deps.MessagesQueueURL),
+		res, err := deps.SnsClient.Publish(ctx, &sns.PublishInput{
+			Message:  aws.String(string(body)),
+			TopicArn: aws.String(deps.MessagesTopicARN),
 		})
 		if err != nil {
 			return fmt.Errorf("failed send message to sqs queue, %w", err)

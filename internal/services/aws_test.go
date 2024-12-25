@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/config"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
@@ -23,7 +24,7 @@ func newRandomMessage() *Message {
 	}
 }
 
-func TestMessageSender(t *testing.T) {
+func TestAWSMessageSender(t *testing.T) {
 	appCfg := config.LoadTestConfig()
 	ctx := context.Background()
 	awsCfg := lo.Must(newAWSConfigFactory(ctx)(AWSConfigDeps{
@@ -31,14 +32,16 @@ func TestMessageSender(t *testing.T) {
 		BaseEndpoint: appCfg.GetString("aws.baseEndpoint"),
 	}))
 	sqsClient := sqs.NewFromConfig(awsCfg)
+	snsClient := sns.NewFromConfig(awsCfg)
+	topicARN := appCfg.GetString("aws.sns.messagesTopicArn")
 	queueURL := appCfg.GetString("aws.sqs.messagesQueueUrl")
 	sender := NewMessageSender(MessageSenderDeps{
-		SqsClient:        sqsClient,
+		SnsClient:        snsClient,
 		RootLogger:       diag.RootTestLogger(),
-		MessagesQueueURL: queueURL,
+		MessagesTopicARN: topicARN,
 	})
 
-	t.Run("should send the message to the queue", func(t *testing.T) {
+	t.Run("should send the message to sns", func(t *testing.T) {
 		message := newRandomMessage()
 		lo.Must(sqsClient.PurgeQueue(ctx, &sqs.PurgeQueueInput{
 			QueueUrl: aws.String(queueURL),
@@ -57,7 +60,7 @@ func TestMessageSender(t *testing.T) {
 	})
 }
 
-func TestMessagesPoller(t *testing.T) {
+func TestAWSMessagesPoller(t *testing.T) {
 	appCfg := config.LoadTestConfig()
 	rootCtx := context.Background()
 	awsCfg := lo.Must(newAWSConfigFactory(rootCtx)(AWSConfigDeps{
@@ -65,11 +68,13 @@ func TestMessagesPoller(t *testing.T) {
 		BaseEndpoint: appCfg.GetString("aws.baseEndpoint"),
 	}))
 	sqsClient := sqs.NewFromConfig(awsCfg)
+	snsClient := sns.NewFromConfig(awsCfg)
 	queueURL := appCfg.GetString("aws.sqs.messagesQueueUrl")
+	topicARN := appCfg.GetString("aws.sns.messagesTopicArn")
 	sender := NewMessageSender(MessageSenderDeps{
-		SqsClient:        sqsClient,
+		SnsClient:        snsClient,
 		RootLogger:       diag.RootTestLogger(),
-		MessagesQueueURL: queueURL,
+		MessagesTopicARN: topicARN,
 	})
 
 	t.Run("should receive the message from the queue", func(t *testing.T) {
