@@ -55,6 +55,7 @@ func Provide(container *dig.Container, cfg *viper.Viper) error {
 		// aws config
 		provideConfigValue(cfg, "aws.region").asString(),
 		provideConfigValue(cfg, "aws.baseEndpoint").asString(),
+		provideConfigValue(cfg, "aws.sns.messagesTopicARN").asString(),
 		provideConfigValue(cfg, "aws.sqs.maxPollWaitTimeSec").asInt32(),
 		provideConfigValue(cfg, "aws.sqs.messagesQueueURL").asString(),
 		provideConfigValue(cfg, "aws.sqs.messagesQueueVisibilityTimeoutSec").asInt32(),

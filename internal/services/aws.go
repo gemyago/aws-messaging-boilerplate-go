@@ -61,7 +61,7 @@ type MessageSenderDeps struct {
 
 	RootLogger       *slog.Logger
 	SnsClient        *sns.Client
-	MessagesTopicARN string `name:"config.aws.sqs.messagesTopicARN"`
+	MessagesTopicARN string `name:"config.aws.sns.messagesTopicARN"`
 }
 
 func NewMessageSender(deps MessageSenderDeps) MessageSender {
