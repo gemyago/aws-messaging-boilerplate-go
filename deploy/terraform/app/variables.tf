@@ -22,3 +22,8 @@ variable "local_stack_env" {
   type        = bool
   description = "Local stack environment"
 }
+
+variable "service_endpoint" {
+  type        = string
+  description = "Base URL of the service"
+}

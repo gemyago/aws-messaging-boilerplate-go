@@ -26,5 +26,6 @@ aws_endpoints = {
   stepfunctions  = "http://localhost:4566"
   sts            = "http://localhost:4566"
 }
-local_stack_env = true
-setup_test_env  = true
+local_stack_env  = true
+setup_test_env   = true
+service_endpoint = "http://localhost:8080"

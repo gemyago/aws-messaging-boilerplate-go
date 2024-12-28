@@ -23,7 +23,7 @@ module "event_bus_http_targets" {
     {
       event_source = "aws-sqs-boilerplate-go",
       detail_type  = "message",
-      endpoint     = "https://webhook.site/6011e29c-7f67-4865-9c30-0c7c3b13fca4",
+      endpoint     = "${var.service_endpoint}/messages/process",
       method       = "POST",
       max_rps      = 20
     }

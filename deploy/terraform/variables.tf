@@ -115,3 +115,8 @@ variable "setup_test_env" {
   type        = bool
   default     = false
 }
+
+variable "service_endpoint" {
+  description = "Base URL of the service"
+  type        = string
+}

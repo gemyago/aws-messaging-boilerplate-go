@@ -49,6 +49,8 @@ terraform_plan_args=
 terraform_vars+=-var "ci_mode=false"
 endif
 
+terraform_plan_args+=-input=false
+
 $(tmp):
 	mkdir -p $(tmp)
 
