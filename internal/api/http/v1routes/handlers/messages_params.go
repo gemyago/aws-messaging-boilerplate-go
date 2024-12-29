@@ -39,12 +39,17 @@ func newParamsParserMessagesProcessMessage(app *HTTPApp) paramsParser[*MessagesP
 }
 
 type paramsParserMessagesPublishMessage struct {
+	bindTarget requestParamBinder[[]string, MessagesPublishMessageTarget]
 	bindPayload requestParamBinder[*http.Request, *Message]
 }
 
 func (p *paramsParserMessagesPublishMessage) parse(router httpRouter, req *http.Request) (*MessagesPublishMessageRequest, error) {
 	bindingCtx := BindingContext{}
 	reqParams := &MessagesPublishMessageRequest{}
+	// query params
+	query := req.URL.Query()
+	queryParamsCtx := bindingCtx.Fork("query")
+	p.bindTarget(queryParamsCtx.Fork("target"), readQueryValue("target", query), &reqParams.Target)
 	// body params
 	p.bindPayload(bindingCtx.Fork("body"), readRequestBodyValue(req), &reqParams.Payload)
 	return reqParams, bindingCtx.AggregatedError()
@@ -52,6 +57,14 @@ func (p *paramsParserMessagesPublishMessage) parse(router httpRouter, req *http.
 
 func newParamsParserMessagesPublishMessage(app *HTTPApp) paramsParser[*MessagesPublishMessageRequest] {
 	return &paramsParserMessagesPublishMessage{
+		bindTarget: newRequestParamBinder(binderParams[[]string, MessagesPublishMessageTarget]{
+			required: true,
+			parseValue: parseMultiValueParamAsSoloValue(
+				ParseMessagesPublishMessageTarget,
+			),
+			validateValue: NewSimpleFieldValidator[MessagesPublishMessageTarget](
+			),
+		}),
 		bindPayload: newRequestParamBinder(binderParams[*http.Request, *Message]{
 			required: true,
 			parseValue: parseSoloValueParamAsSoloValue(

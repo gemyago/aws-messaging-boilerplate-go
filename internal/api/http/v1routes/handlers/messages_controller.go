@@ -15,6 +15,62 @@ var _ = time.Time{}
 var _ = json.Unmarshal
 var _ = fmt.Sprint
 
+type MessagesPublishMessageTarget string
+
+// List of MessagesPublishMessageTarget values.
+const (
+	MessagesPublishMessageTargetSNS MessagesPublishMessageTarget = "SNS"
+	MessagesPublishMessageTargetEVENTBRIDGE MessagesPublishMessageTarget = "EVENT_BRIDGE"
+)
+
+func(v MessagesPublishMessageTarget) IsSNS() bool {
+  return v == MessagesPublishMessageTargetSNS
+}
+
+func(v MessagesPublishMessageTarget) IsEVENTBRIDGE() bool {
+  return v == MessagesPublishMessageTargetEVENTBRIDGE
+}
+
+func(v MessagesPublishMessageTarget) String() string {
+	return string(v)
+}
+
+type assignableMessagesPublishMessageTarget interface {
+	IsSNS() bool
+	IsEVENTBRIDGE() bool
+	String() string
+}
+
+func AsMessagesPublishMessageTarget(v assignableMessagesPublishMessageTarget) (MessagesPublishMessageTarget) {
+	return MessagesPublishMessageTarget(v.String())
+}
+
+func ParseMessagesPublishMessageTarget(str string, target *MessagesPublishMessageTarget) error {
+	switch str {
+	case "SNS":
+		*target = MessagesPublishMessageTargetSNS
+	case "EVENT_BRIDGE":
+		*target = MessagesPublishMessageTargetEVENTBRIDGE
+	default:
+		return fmt.Errorf("unexpected MessagesPublishMessageTarget value: %s", str)
+	}
+	return nil
+}
+
+func (v *MessagesPublishMessageTarget) UnmarshalJSON(data []byte) error {
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
+		return err
+	}
+	return ParseMessagesPublishMessageTarget(str, v)
+}
+
+// All allowed values of MessagesPublishMessageTarget enum.
+var AllowableMessagesPublishMessageTargetValues = []MessagesPublishMessageTarget{
+	MessagesPublishMessageTargetSNS,
+	MessagesPublishMessageTargetEVENTBRIDGE,
+}
+
 
 
 // MessagesProcessMessageRequest represents params for processMessage operation
@@ -29,6 +85,8 @@ type MessagesProcessMessageRequest struct {
 //
 // Request: POST /messages/publish.
 type MessagesPublishMessageRequest struct {
+	// Target is parsed from request query and declared as target.
+	Target MessagesPublishMessageTarget
 	// Payload is parsed from request body and declared as payload.
 	Payload *Message
 }

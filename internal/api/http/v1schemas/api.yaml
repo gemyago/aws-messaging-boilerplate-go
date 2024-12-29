@@ -32,6 +32,16 @@ paths:
       operationId: publishMessage
       tags:
         - messages
+      parameters:
+        - name: target
+          in: query
+          description: Target to publish the message to
+          required: true
+          schema:
+            type: string
+            enum:
+              - SNS
+              - EVENT_BRIDGE
       requestBody:
         content:
           application/json:
