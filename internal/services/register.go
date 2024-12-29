@@ -2,23 +2,21 @@ package services
 
 import (
 	"context"
+	"errors"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/service/sns"
-	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/di"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
 	"go.uber.org/dig"
 )
 
 func Register(rootCtx context.Context, container *dig.Container) error {
-	return di.ProvideAll(container,
-		newAWSConfigFactory(rootCtx),
-		sqs.NewFromConfig,
-		sns.NewFromConfig,
-		NewMessagesPoller,
-		NewMessageSender,
-		NewTimeProvider,
-		di.ProvideValue(time.NewTicker),
-		NewShutdownHooks,
+	return errors.Join(
+		awsapi.Register(rootCtx, container),
+		di.ProvideAll(container,
+			NewTimeProvider,
+			di.ProvideValue(time.NewTicker),
+			NewShutdownHooks,
+		),
 	)
 }

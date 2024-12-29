@@ -2,7 +2,7 @@
 
 //go:build !release
 
-package services
+package awsapi
 
 import (
 	context "context"

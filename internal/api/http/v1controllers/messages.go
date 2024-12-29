@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/handlers"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
 	"go.uber.org/dig"
 )
 
@@ -15,7 +15,7 @@ func healthCheck(_ context.Context) error {
 
 type messagesCommands interface {
 	PublishMessage(context.Context, *handlers.MessagesPublishMessageRequest) error
-	ProcessMessage(context.Context, *services.Message) error
+	ProcessMessage(context.Context, *awsapi.Message) error
 }
 
 type MessagesControllerDeps struct {
@@ -30,7 +30,7 @@ func NewMessagesController(deps MessagesControllerDeps) *handlers.MessagesContro
 		HandlePublishMessage.With(deps.Commands.PublishMessage).
 		HandleProcessMessage.With(
 		func(ctx context.Context, mpmr *handlers.MessagesProcessMessageRequest) error {
-			payload := services.Message(*mpmr.Payload)
+			payload := awsapi.Message(*mpmr.Payload)
 			return deps.Commands.ProcessMessage(ctx, &payload)
 		}).
 		Finalize()

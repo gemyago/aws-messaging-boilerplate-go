@@ -5,6 +5,7 @@ import (
 
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/app"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
 	"go.uber.org/dig"
 )
 
@@ -19,7 +20,7 @@ type Deps struct {
 	Commands *app.Commands
 
 	// services
-	*services.MessagesPoller
+	*awsapi.MessagesPoller
 	*services.ShutdownHooks
 }
 
@@ -31,9 +32,9 @@ func StartPolling(ctx context.Context, deps Deps) error {
 	})
 
 	poller := deps.MessagesPoller
-	poller.RegisterQueue(services.MessagesPollerQueue{
+	poller.RegisterQueue(awsapi.MessagesPollerQueue{
 		QueueURL:          deps.MessagesQueueURL,
-		Handler:           services.NewRawMessageHandler(deps.Commands.ProcessMessage),
+		Handler:           awsapi.NewRawMessageHandler(deps.Commands.ProcessMessage),
 		VisibilityTimeout: deps.MessagesQueueVisibilityTimeoutSec,
 	})
 

@@ -8,7 +8,7 @@ import (
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/handlers"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/models"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
 	"github.com/go-faker/faker/v4"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
@@ -29,12 +29,12 @@ func TestCommands(t *testing.T) {
 	}
 
 	type mockCommandDeps struct {
-		mockMessageSender *services.MockMessageSender
+		mockMessageSender *awsapi.MockMessageSender
 		deps              CommandsDeps
 	}
 
 	makeMockDeps := func(t *testing.T) mockCommandDeps {
-		mockMessageSender := services.NewMockMessageSender(t)
+		mockMessageSender := awsapi.NewMockMessageSender(t)
 		return mockCommandDeps{
 			mockMessageSender: mockMessageSender,
 			deps: CommandsDeps{
@@ -50,7 +50,7 @@ func TestCommands(t *testing.T) {
 			deps := makeMockDeps(t)
 			commands := NewCommands(deps.deps)
 			req := randomMessagesPublishMessageRequest()
-			deps.mockMessageSender.EXPECT().Execute(ctx, lo.ToPtr(services.Message(*req.Payload))).Return(nil)
+			deps.mockMessageSender.EXPECT().Execute(ctx, lo.ToPtr(awsapi.Message(*req.Payload))).Return(nil)
 			err := commands.PublishMessage(ctx, req)
 			require.NoError(t, err)
 		})
@@ -61,7 +61,7 @@ func TestCommands(t *testing.T) {
 			commands := NewCommands(deps.deps)
 			req := randomMessagesPublishMessageRequest()
 			expectedErr := errors.New(faker.Sentence())
-			deps.mockMessageSender.EXPECT().Execute(ctx, lo.ToPtr(services.Message(*req.Payload))).Return(expectedErr)
+			deps.mockMessageSender.EXPECT().Execute(ctx, lo.ToPtr(awsapi.Message(*req.Payload))).Return(expectedErr)
 			err := commands.PublishMessage(ctx, req)
 			require.ErrorIs(t, err, expectedErr)
 		})
@@ -72,7 +72,7 @@ func TestCommands(t *testing.T) {
 			ctx := context.Background()
 			deps := makeMockDeps(t)
 			commands := NewCommands(deps.deps)
-			msg := services.Message(*randomMessage())
+			msg := awsapi.Message(*randomMessage())
 			err := commands.ProcessMessage(ctx, &msg)
 			require.NoError(t, err)
 		})

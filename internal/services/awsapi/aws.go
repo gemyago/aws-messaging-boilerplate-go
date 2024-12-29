@@ -1,4 +1,4 @@
-package services
+package awsapi
 
 import (
 	"context"
@@ -19,7 +19,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-//go:generate mockery --name=MessageSender --filename=mock_message_sender.go --config ../../.mockery-funcs.yaml
+//go:generate mockery --name=MessageSender --filename=mock_message_sender.go --config ../../../.mockery-funcs.yaml
 
 type AWSConfigDeps struct {
 	dig.In
