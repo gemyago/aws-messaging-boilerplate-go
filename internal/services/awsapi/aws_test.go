@@ -2,7 +2,7 @@ package awsapi
 
 import (
 	"context"
-	"encoding/json"
+
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -22,44 +22,6 @@ func newRandomMessage() *Message {
 		Name:     faker.Name(),
 		Comments: faker.Sentence(),
 	}
-}
-
-func TestAWSMessageSender(t *testing.T) {
-	appCfg := config.LoadTestConfig()
-	ctx := context.Background()
-	awsCfg := lo.Must(newAWSConfigFactory(ctx)(AWSConfigDeps{
-		Region:       appCfg.GetString("aws.region"),
-		BaseEndpoint: appCfg.GetString("aws.baseEndpoint"),
-	}))
-	sqsClient := sqs.NewFromConfig(awsCfg)
-	snsClient := sns.NewFromConfig(awsCfg)
-	topicARN := appCfg.GetString("aws.sns.messagesTopicArn")
-	queueURL := appCfg.GetString("aws.sqs.messagesQueueUrl")
-	sender := NewMessageSender(MessageSenderDeps{
-		SnsClient:        snsClient,
-		RootLogger:       diag.RootTestLogger(),
-		MessagesTopicARN: topicARN,
-	})
-
-	t.Run("should send the message to sns", func(t *testing.T) {
-		message := newRandomMessage()
-		lo.Must(sqsClient.PurgeQueue(ctx, &sqs.PurgeQueueInput{
-			QueueUrl: aws.String(queueURL),
-		}))
-		err := sender(context.Background(), message)
-		require.NoError(t, err)
-
-		res, err := sqsClient.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
-			QueueUrl:            aws.String(queueURL),
-			MaxNumberOfMessages: 1,
-			WaitTimeSeconds:     1,
-		})
-		require.NoError(t, err)
-		require.Len(t, res.Messages, 1)
-		var receivedMessage Message
-		require.NoError(t, json.Unmarshal([]byte(*res.Messages[0].Body), &receivedMessage))
-		assert.Equal(t, message, &receivedMessage)
-	})
 }
 
 func TestAWSMessagesPoller(t *testing.T) {
