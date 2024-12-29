@@ -6,16 +6,21 @@ import (
 	"log/slog"
 
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/handlers"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
+	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/models"
 	"go.uber.org/dig"
 )
+
+type messageSender[TMessage any] func(
+	ctx context.Context,
+	message *TMessage,
+) error
 
 type CommandsDeps struct {
 	dig.In
 
 	RootLogger *slog.Logger
 
-	SendMessage awsapi.MessageSender
+	SendMessage messageSender[models.Message]
 }
 
 type Commands struct {
@@ -24,14 +29,13 @@ type Commands struct {
 }
 
 func (c *Commands) PublishMessage(ctx context.Context, req *handlers.MessagesPublishMessageRequest) error {
-	msg := awsapi.Message(*req.Payload)
-	if err := c.deps.SendMessage(ctx, &msg); err != nil {
+	if err := c.deps.SendMessage(ctx, req.Payload); err != nil {
 		return fmt.Errorf("failed to send message, %w", err)
 	}
 	return nil
 }
 
-func (c *Commands) ProcessMessage(ctx context.Context, msg *awsapi.Message) error {
+func (c *Commands) ProcessMessage(ctx context.Context, msg *models.Message) error {
 	if c.logger.Enabled(ctx, slog.LevelDebug) {
 		c.logger.DebugContext(ctx, "Processing message", slog.Any("message", msg))
 	}

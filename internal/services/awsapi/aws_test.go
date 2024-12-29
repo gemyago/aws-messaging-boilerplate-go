@@ -16,8 +16,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newRandomMessage() *Message {
-	return &Message{
+func newRandomMessage() *testMessage {
+	return &testMessage{
 		Id:       faker.UUIDHyphenated(),
 		Name:     faker.Name(),
 		Comments: faker.Sentence(),
@@ -35,7 +35,7 @@ func TestAWSMessagesPoller(t *testing.T) {
 	snsClient := sns.NewFromConfig(awsCfg)
 	queueURL := appCfg.GetString("aws.sqs.messagesQueueUrl")
 	topicARN := appCfg.GetString("aws.sns.messagesTopicArn")
-	sender := NewMessageSender(MessageSenderDeps{
+	sender := NewMessageSender[testMessage](MessageSenderDeps{
 		SnsClient:        snsClient,
 		RootLogger:       diag.RootTestLogger(),
 		MessagesTopicARN: topicARN,
@@ -51,10 +51,10 @@ func TestAWSMessagesPoller(t *testing.T) {
 			SqsClient:  sqsClient,
 			RootLogger: diag.RootTestLogger(),
 		})
-		handledMessage := make(chan *Message)
+		handledMessage := make(chan *testMessage)
 		poller.RegisterQueue(MessagesPollerQueue{
 			QueueURL: queueURL,
-			Handler: NewRawMessageHandler(func(_ context.Context, message *Message) error {
+			Handler: NewRawMessageHandler(func(_ context.Context, message *testMessage) error {
 				handledMessage <- message
 				return nil
 			}),
@@ -86,7 +86,7 @@ func TestAWSMessagesPoller(t *testing.T) {
 		})
 		poller.RegisterQueue(MessagesPollerQueue{
 			QueueURL: queueURL,
-			Handler: NewRawMessageHandler(func(_ context.Context, _ *Message) error {
+			Handler: NewRawMessageHandler(func(_ context.Context, _ *testMessage) error {
 				return nil
 			}),
 		})

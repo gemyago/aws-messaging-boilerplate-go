@@ -15,6 +15,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type testMessage struct {
+	Id       string `json:"id"` //nolint:revive,stylecheck // Id is used to match apigen generated code
+	Name     string `json:"name"`
+	Comments string `json:"comments,omitempty"`
+}
+
 func TestAWSMessageSender(t *testing.T) {
 	appCfg := config.LoadTestConfig()
 	ctx := context.Background()
@@ -26,7 +32,7 @@ func TestAWSMessageSender(t *testing.T) {
 	snsClient := sns.NewFromConfig(awsCfg)
 	topicARN := appCfg.GetString("aws.sns.messagesTopicArn")
 	queueURL := appCfg.GetString("aws.sqs.messagesQueueUrl")
-	sender := NewMessageSender(MessageSenderDeps{
+	sender := NewMessageSender[testMessage](MessageSenderDeps{
 		SnsClient:        snsClient,
 		RootLogger:       diag.RootTestLogger(),
 		MessagesTopicARN: topicARN,
@@ -47,7 +53,7 @@ func TestAWSMessageSender(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.Len(t, res.Messages, 1)
-		var receivedMessage Message
+		var receivedMessage testMessage
 		require.NoError(t, json.Unmarshal([]byte(*res.Messages[0].Body), &receivedMessage))
 		assert.Equal(t, message, &receivedMessage)
 	})

@@ -11,13 +11,10 @@ import (
 	"go.uber.org/dig"
 )
 
-type Message struct {
-	Id       string `json:"id"` //nolint:revive,stylecheck // Id is used to match apigen generated code
-	Name     string `json:"name"`
-	Comments string `json:"comments,omitempty"`
-}
-
-type MessageSender func(ctx context.Context, message *Message) error
+type MessageSender[TMessage any] func(
+	ctx context.Context,
+	message *TMessage,
+) error
 
 type MessageSenderDeps struct {
 	dig.In
@@ -27,9 +24,9 @@ type MessageSenderDeps struct {
 	MessagesTopicARN string `name:"config.aws.sns.messagesTopicARN"`
 }
 
-func NewMessageSender(deps MessageSenderDeps) MessageSender {
+func NewMessageSender[TMessage any](deps MessageSenderDeps) MessageSender[TMessage] {
 	logger := deps.RootLogger.WithGroup("services.message-sender")
-	return func(ctx context.Context, message *Message) error {
+	return func(ctx context.Context, message *TMessage) error {
 		body, err := json.Marshal(message)
 		if err != nil {
 			return fmt.Errorf("failed to marshal message, %w", err)

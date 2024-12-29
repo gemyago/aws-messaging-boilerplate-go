@@ -15,6 +15,5 @@ func Register(rootCtx context.Context, container *dig.Container) error {
 		sqs.NewFromConfig,
 		sns.NewFromConfig,
 		NewMessagesPoller,
-		NewMessageSender,
 	)
 }

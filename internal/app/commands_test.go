@@ -10,7 +10,6 @@ import (
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
 	"github.com/go-faker/faker/v4"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
@@ -29,12 +28,12 @@ func TestCommands(t *testing.T) {
 	}
 
 	type mockCommandDeps struct {
-		mockMessageSender *awsapi.MockMessageSender
+		mockMessageSender *awsapi.MockMessageSender[models.Message]
 		deps              CommandsDeps
 	}
 
 	makeMockDeps := func(t *testing.T) mockCommandDeps {
-		mockMessageSender := awsapi.NewMockMessageSender(t)
+		mockMessageSender := awsapi.NewMockMessageSender[models.Message](t)
 		return mockCommandDeps{
 			mockMessageSender: mockMessageSender,
 			deps: CommandsDeps{
@@ -50,7 +49,7 @@ func TestCommands(t *testing.T) {
 			deps := makeMockDeps(t)
 			commands := NewCommands(deps.deps)
 			req := randomMessagesPublishMessageRequest()
-			deps.mockMessageSender.EXPECT().Execute(ctx, lo.ToPtr(awsapi.Message(*req.Payload))).Return(nil)
+			deps.mockMessageSender.EXPECT().Execute(ctx, req.Payload).Return(nil)
 			err := commands.PublishMessage(ctx, req)
 			require.NoError(t, err)
 		})
@@ -61,7 +60,7 @@ func TestCommands(t *testing.T) {
 			commands := NewCommands(deps.deps)
 			req := randomMessagesPublishMessageRequest()
 			expectedErr := errors.New(faker.Sentence())
-			deps.mockMessageSender.EXPECT().Execute(ctx, lo.ToPtr(awsapi.Message(*req.Payload))).Return(expectedErr)
+			deps.mockMessageSender.EXPECT().Execute(ctx, req.Payload).Return(expectedErr)
 			err := commands.PublishMessage(ctx, req)
 			require.ErrorIs(t, err, expectedErr)
 		})
@@ -72,7 +71,7 @@ func TestCommands(t *testing.T) {
 			ctx := context.Background()
 			deps := makeMockDeps(t)
 			commands := NewCommands(deps.deps)
-			msg := awsapi.Message(*randomMessage())
+			msg := models.Message(*randomMessage())
 			err := commands.ProcessMessage(ctx, &msg)
 			require.NoError(t, err)
 		})
