@@ -32,10 +32,9 @@ func TestAWSMessageSender(t *testing.T) {
 	snsClient := sns.NewFromConfig(awsCfg)
 	topicARN := appCfg.GetString("aws.sns.messagesTopicArn")
 	queueURL := appCfg.GetString("aws.sqs.messagesQueueUrl")
-	sender := NewMessageSender[testMessage](MessageSenderDeps{
-		SnsClient:        snsClient,
-		RootLogger:       diag.RootTestLogger(),
-		MessagesTopicARN: topicARN,
+	sender := NewSNSMessageSender[testMessage](topicARN, SNSMessageSenderDeps{
+		SnsClient:  snsClient,
+		RootLogger: diag.RootTestLogger(),
 	})
 
 	t.Run("should send the message to sns", func(t *testing.T) {

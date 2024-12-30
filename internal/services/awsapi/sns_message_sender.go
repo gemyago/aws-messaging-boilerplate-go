@@ -11,20 +11,14 @@ import (
 	"go.uber.org/dig"
 )
 
-type MessageSender[TMessage any] func(
-	ctx context.Context,
-	message *TMessage,
-) error
-
-type MessageSenderDeps struct {
+type SNSMessageSenderDeps struct {
 	dig.In
 
-	RootLogger       *slog.Logger
-	SnsClient        *sns.Client
-	MessagesTopicARN string `name:"config.aws.sns.messagesTopicARN"`
+	RootLogger *slog.Logger
+	SnsClient  *sns.Client
 }
 
-func NewMessageSender[TMessage any](deps MessageSenderDeps) MessageSender[TMessage] {
+func NewSNSMessageSender[TMessage any](topicARN string, deps SNSMessageSenderDeps) MessageSender[TMessage] {
 	logger := deps.RootLogger.WithGroup("services.message-sender")
 	return func(ctx context.Context, message *TMessage) error {
 		body, err := json.Marshal(message)
@@ -33,7 +27,7 @@ func NewMessageSender[TMessage any](deps MessageSenderDeps) MessageSender[TMessa
 		}
 		res, err := deps.SnsClient.Publish(ctx, &sns.PublishInput{
 			Message:  aws.String(string(body)),
-			TopicArn: aws.String(deps.MessagesTopicARN),
+			TopicArn: aws.String(topicARN),
 		})
 		if err != nil {
 			return fmt.Errorf("failed send message to sqs queue, %w", err)

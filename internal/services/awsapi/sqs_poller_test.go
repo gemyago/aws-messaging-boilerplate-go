@@ -35,10 +35,9 @@ func TestAWSMessagesPoller(t *testing.T) {
 	snsClient := sns.NewFromConfig(awsCfg)
 	queueURL := appCfg.GetString("aws.sqs.messagesQueueUrl")
 	topicARN := appCfg.GetString("aws.sns.messagesTopicArn")
-	sender := NewMessageSender[testMessage](MessageSenderDeps{
-		SnsClient:        snsClient,
-		RootLogger:       diag.RootTestLogger(),
-		MessagesTopicARN: topicARN,
+	sender := NewSNSMessageSender[testMessage](topicARN, SNSMessageSenderDeps{
+		SnsClient:  snsClient,
+		RootLogger: diag.RootTestLogger(),
 	})
 
 	t.Run("should receive the message from the queue", func(t *testing.T) {
