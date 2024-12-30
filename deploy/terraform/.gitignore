@@ -1,7 +1,7 @@
 /.terraform/
 /tmp
-/deploy-env/*-local/
-/deploy-env/*/state-prefix.*.tfbackend
+/environments/*-local/
+/environments/*/state-prefix.*.tfbackend
 bin
 plan
 plan-artifacts.tar
