@@ -33,23 +33,19 @@ app_name:=$(shell basename `git rev-parse --show-toplevel`)
 terraform_version=$(shell cat .terraform-version)
 terraform_zip_name=terraform_$(terraform_version)_$(os)_$(arch).zip
 terraform_zip=$(tmp)/$(terraform_zip_name)
-terraform_val_file=deploy-env/$(DEPLOY_ENV)/values.tfvars
-terraform_backend_bucket_file=deploy-env/$(DEPLOY_ENV)/state-bucket.s3.tfbackend
-terraform_backend_prefix_file=deploy-env/$(DEPLOY_ENV)/state-prefix.s3.tfbackend
-terraform_vars=-var "app_name=$(app_name)" \
-			   -var-file=$(terraform_val_file)
+terraform_val_file=environments/$(DEPLOY_ENV)/values.tfvars
+terraform_backend_bucket_file=environments/$(DEPLOY_ENV)/state-bucket.s3.tfbackend
+terraform_backend_prefix_file=environments/$(DEPLOY_ENV)/state-prefix.s3.tfbackend
+terraform_vars=-var "app_name=$(app_name)"
+terraform_plan_args=-input=false
 
 ifdef CI
 terraform=$(shell which terraform)
-terraform_plan_args=-no-color
-terraform_vars+=-var "ci_mode=true"
+terraform_plan_args+=-no-color
 else
 terraform=$(bin)/terraform
-terraform_plan_args=
-terraform_vars+=-var "ci_mode=false"
 endif
 
-terraform_plan_args+=-input=false
 
 $(tmp):
 	mkdir -p $(tmp)
