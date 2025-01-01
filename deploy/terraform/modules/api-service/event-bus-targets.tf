@@ -1,5 +1,5 @@
 module "event_bus_http_targets" {
-  source                = "../modules/event-bus-http-targets"
+  source                = "../event-bus-http-targets"
   app_name              = var.app_name
   bus_name              = var.app_bus_name
   aws_primary_region    = var.aws_primary_region

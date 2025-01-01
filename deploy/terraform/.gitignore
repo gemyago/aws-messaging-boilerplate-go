@@ -1,6 +1,7 @@
 /.terraform/
 /tmp
 /environments/*-local/
+/environments/*/.terraform/
 /environments/*/state-prefix.*.tfbackend
 bin
 plan

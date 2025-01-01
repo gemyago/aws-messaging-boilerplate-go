@@ -33,9 +33,10 @@ app_name:=$(shell basename `git rev-parse --show-toplevel`)
 terraform_version=$(shell cat .terraform-version)
 terraform_zip_name=terraform_$(terraform_version)_$(os)_$(arch).zip
 terraform_zip=$(tmp)/$(terraform_zip_name)
-terraform_val_file=environments/$(DEPLOY_ENV)/values.tfvars
-terraform_backend_bucket_file=environments/$(DEPLOY_ENV)/state-bucket.s3.tfbackend
-terraform_backend_prefix_file=environments/$(DEPLOY_ENV)/state-prefix.s3.tfbackend
+env_root=environments/$(DEPLOY_ENV)
+terraform_backend_bucket_file=state-bucket.s3.tfbackend
+terraform_backend_prefix_file=state-prefix.s3.tfbackend
+terraform_args=-chdir="$(env_root)"
 terraform_vars=-var "app_name=$(app_name)"
 terraform_plan_args=-input=false
 
@@ -45,7 +46,7 @@ terraform_plan_args+=-no-color
 else
 terraform=$(bin)/terraform
 endif
-
+terraform_with_args=$(terraform) $(terraform_args)
 
 $(tmp):
 	mkdir -p $(tmp)
@@ -66,37 +67,34 @@ check-deploy-env:
 ifndef DEPLOY_ENV
 	$(error DEPLOY_ENV is undefined)
 endif
-ifeq ("$(wildcard $(terraform_val_file))","")
-	$(error $(terraform_val_file) not exists)
-endif
 
-$(terraform_backend_prefix_file):
+%/$(terraform_backend_prefix_file):
 	echo 'key  = "$(app_name)-state"' > $@
 
-init: $(terraform) check-deploy-env $(terraform_backend_prefix_file)
-	$(terraform) init -backend-config=$(terraform_backend_bucket_file) -backend-config=$(terraform_backend_prefix_file)
+init: $(terraform) check-deploy-env $(env_root)/$(terraform_backend_prefix_file)
+	$(terraform_with_args) init -backend-config=$(terraform_backend_bucket_file) -backend-config=$(terraform_backend_prefix_file)
 
-init_upgrade: $(terraform) check-deploy-env $(terraform_backend_prefix_file)
-	$(terraform) init -backend-config=$(terraform_backend_bucket_file) -backend-config=$(terraform_backend_prefix_file) -upgrade
+init_upgrade: $(terraform) check-deploy-env $(env_root)/$(terraform_backend_prefix_file)
+	$(terraform_with_args) init -backend-config=$(terraform_backend_bucket_file) -backend-config=$(terraform_backend_prefix_file) -upgrade
 
 import: $(terraform) check-deploy-env
-	@echo $(terraform) import $(terraform_vars)
+	@echo $(terraform_with_args) import $(terraform_vars)
 
 state: $(terraform) check-deploy-env
-	@echo $(terraform) state
+	@echo $(terraform_with_args) state
 
 plan: $(terraform) check-deploy-env
-	@$(terraform) plan $(terraform_plan_args) $(terraform_vars) -out plan
+	@$(terraform_with_args) plan $(terraform_plan_args) $(terraform_vars) -out plan
 
 plan_destroy: $(terraform) check-deploy-env
-	@$(terraform) plan --destroy $(terraform_plan_args) $(terraform_vars) -out plan
+	@$(terraform_with_args) plan --destroy $(terraform_plan_args) $(terraform_vars) -out plan
 
 plan-artifacts.tar:
 	tar $(tar_ignore_arg) $(tar_absolute_names) -cvf $@ \
 		plan .terraform.lock.hcl
 
 refresh: $(terraform) check-deploy-env
-	$(terraform) refresh $(terraform_vars)
+	$(terraform_with_args) refresh $(terraform_vars)
 
 apply: $(terraform) check-deploy-env
 	$(terraform) apply -auto-approve plan
