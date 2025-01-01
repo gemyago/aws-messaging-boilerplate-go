@@ -4,7 +4,6 @@ module "api_infra" {
   resources_description = var.resources_description
   local_stack_env       = true
 }
-
 module "api_service" {
   source                   = "../../modules/api-service"
   app_name                 = var.app_name
