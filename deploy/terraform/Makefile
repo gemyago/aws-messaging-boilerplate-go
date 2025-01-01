@@ -34,7 +34,6 @@ terraform_version=$(shell cat .terraform-version)
 terraform_zip_name=terraform_$(terraform_version)_$(os)_$(arch).zip
 terraform_zip=$(tmp)/$(terraform_zip_name)
 env_root=environments/$(DEPLOY_ENV)
-terraform_backend_bucket_file=state-bucket.s3.tfbackend
 terraform_backend_prefix_file=state-prefix.s3.tfbackend
 terraform_args=-chdir="$(env_root)"
 terraform_vars=-var "app_name=$(app_name)"
@@ -72,10 +71,10 @@ endif
 	echo 'key  = "$(app_name)-state"' > $@
 
 init: $(terraform) check-deploy-env $(env_root)/$(terraform_backend_prefix_file)
-	$(terraform_with_args) init -backend-config=$(terraform_backend_bucket_file) -backend-config=$(terraform_backend_prefix_file)
+	$(terraform_with_args) init -backend-config=$(terraform_backend_prefix_file)
 
 init_upgrade: $(terraform) check-deploy-env $(env_root)/$(terraform_backend_prefix_file)
-	$(terraform_with_args) init -backend-config=$(terraform_backend_bucket_file) -backend-config=$(terraform_backend_prefix_file) -upgrade
+	$(terraform_with_args) init -backend-config=$(terraform_backend_prefix_file) -upgrade
 
 import: $(terraform) check-deploy-env
 	@echo $(terraform_with_args) import $(terraform_vars)
