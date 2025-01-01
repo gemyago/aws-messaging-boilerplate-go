@@ -1,7 +1,7 @@
 resource "aws_sns_topic_subscription" "dummy_messages" {
   topic_arn            = var.dummy_messages_topic_arn
   protocol             = "sqs"
-  endpoint             = aws_sqs_queue.messages.arn
+  endpoint             = aws_sqs_queue.dummy_messages.arn
   raw_message_delivery = true
 }
 

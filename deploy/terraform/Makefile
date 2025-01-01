@@ -96,7 +96,7 @@ refresh: $(terraform) check-deploy-env
 	$(terraform_with_args) refresh $(terraform_vars)
 
 apply: $(terraform) check-deploy-env
-	$(terraform) apply -auto-approve plan
+	$(terraform_with_args) apply -auto-approve plan
 
 lint_check: $(terraform)
 	$(terraform) fmt -check -recursive .
