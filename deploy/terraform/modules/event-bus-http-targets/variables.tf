@@ -26,6 +26,7 @@ variable "resources_description" {
 
 variable "http_targets" {
   type = list(object({
+    target_id    = string
     event_source = string
     detail_type  = string
     endpoint     = string

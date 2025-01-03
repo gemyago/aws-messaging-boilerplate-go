@@ -1,7 +1,7 @@
 locals {
   http_targets = [
     for index, target in var.http_targets : {
-      key          = "${target.event_source}-${target.detail_type}-${target.endpoint}"
+      key          = target.target_id
       event_source = target.event_source
       detail_type  = target.detail_type
       endpoint     = target.endpoint
