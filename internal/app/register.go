@@ -7,20 +7,35 @@ import (
 	"go.uber.org/dig"
 )
 
-type dummyMessagesSnsDeps struct {
+type dummyMessagesSendersDeps struct {
 	dig.In
 
-	SnsDeps  awsapi.SNSMessageSenderDeps
-	TopicARN string `name:"config.aws.sns.dummyMessagesTopicArn"`
+	SnsDeps      awsapi.SNSMessageSenderDeps
+	EventBusDeps awsapi.EventBusMessageSenderDeps
+
+	DummyMessagesDetailType string `name:"config.aws.eventBus.dummyMessagesDetailType"`
+	DummyMessagesTopicARN   string `name:"config.aws.sns.dummyMessagesTopicArn"`
+}
+
+type dummySendersOut struct {
+	dig.Out
+
+	SendDummySNSMessage         messageSender[models.DummyMessage] `name:"dummy-sns-message-sender"`
+	SendDummyEventBridgeMessage messageSender[models.DummyMessage] `name:"dummy-eventbridge-message-sender"`
 }
 
 func Register(container *dig.Container) error {
 	return di.ProvideAll(
 		container,
-		func(deps dummyMessagesSnsDeps) messageSender[models.DummyMessage] {
-			return messageSender[models.DummyMessage](
-				awsapi.NewSNSMessageSender[models.DummyMessage](deps.TopicARN, deps.SnsDeps),
-			)
+		func(deps dummyMessagesSendersDeps) dummySendersOut {
+			return dummySendersOut{
+				SendDummySNSMessage: messageSender[models.DummyMessage](
+					awsapi.NewSNSMessageSender[models.DummyMessage](deps.DummyMessagesTopicARN, deps.SnsDeps),
+				),
+				SendDummyEventBridgeMessage: messageSender[models.DummyMessage](
+					awsapi.NewEventBusMessageSender[models.DummyMessage](deps.DummyMessagesDetailType, deps.EventBusDeps),
+				),
+			}
 		},
 		NewCommands,
 	)

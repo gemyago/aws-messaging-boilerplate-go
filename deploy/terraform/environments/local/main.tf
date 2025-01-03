@@ -12,7 +12,7 @@ module "api_service" {
   resources_prefix         = var.resources_prefix
   resources_description    = var.resources_description
   aws_primary_region       = var.aws_primary_region
-  service_endpoint         = "http://localhost:8080"
+  service_endpoint         = "http://host.docker.internal:8080"
 }
 
 # Below is required to run tests
@@ -30,5 +30,5 @@ module "test_api_service" {
   resources_prefix         = "${var.resources_prefix}test-"
   resources_description    = var.resources_description
   aws_primary_region       = var.aws_primary_region
-  service_endpoint         = "http://localhost:418080"
+  service_endpoint         = "http://host.docker.internal:418080"
 }

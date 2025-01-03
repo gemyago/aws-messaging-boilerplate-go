@@ -7,6 +7,7 @@ import (
 
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/handlers"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/models"
+	"github.com/samber/lo"
 	"go.uber.org/dig"
 )
 
@@ -20,7 +21,8 @@ type CommandsDeps struct {
 
 	RootLogger *slog.Logger
 
-	SendDummySNSMessage messageSender[models.DummyMessage]
+	SendDummySNSMessage         messageSender[models.DummyMessage] `name:"dummy-sns-message-sender"`
+	SendDummyEventBridgeMessage messageSender[models.DummyMessage] `name:"dummy-eventbridge-message-sender"`
 }
 
 type Commands struct {
@@ -29,7 +31,11 @@ type Commands struct {
 }
 
 func (c *Commands) PublishMessage(ctx context.Context, req *handlers.MessagesPublishDummyMessageRequest) error {
-	if err := c.deps.SendDummySNSMessage(ctx, req.Payload); err != nil {
+	sendDummyMessage := lo.If(
+		req.Target == handlers.MessagesPublishDummyMessageTargetSNS,
+		c.deps.SendDummySNSMessage,
+	).Else(c.deps.SendDummyEventBridgeMessage)
+	if err := sendDummyMessage(ctx, req.Payload); err != nil {
 		return fmt.Errorf("failed to send message, %w", err)
 	}
 	return nil

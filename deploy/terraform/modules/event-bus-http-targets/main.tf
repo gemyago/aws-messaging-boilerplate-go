@@ -62,7 +62,6 @@ resource "random_id" "destination_name" {
 
   keepers = {
     index    = each.key
-    endpoint = each.value.endpoint
   }
 }
 
