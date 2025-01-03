@@ -37,8 +37,8 @@ func TestCommands(t *testing.T) {
 		return mockCommandDeps{
 			mockMessageSender: mockMessageSender,
 			deps: CommandsDeps{
-				RootLogger:  diag.RootTestLogger(),
-				SendMessage: mockMessageSender.Execute,
+				RootLogger:          diag.RootTestLogger(),
+				SendDummySNSMessage: mockMessageSender.Execute,
 			},
 		}
 	}

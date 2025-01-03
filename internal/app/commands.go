@@ -20,7 +20,7 @@ type CommandsDeps struct {
 
 	RootLogger *slog.Logger
 
-	SendMessage messageSender[models.DummyMessage]
+	SendDummySNSMessage messageSender[models.DummyMessage]
 }
 
 type Commands struct {
@@ -29,7 +29,7 @@ type Commands struct {
 }
 
 func (c *Commands) PublishMessage(ctx context.Context, req *handlers.MessagesPublishDummyMessageRequest) error {
-	if err := c.deps.SendMessage(ctx, req.Payload); err != nil {
+	if err := c.deps.SendDummySNSMessage(ctx, req.Payload); err != nil {
 		return fmt.Errorf("failed to send message, %w", err)
 	}
 	return nil
