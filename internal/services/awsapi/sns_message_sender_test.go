@@ -15,19 +15,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type testMessage struct {
-	Id       string `json:"id"` //nolint:revive,stylecheck // Id is used to match apigen generated code
-	Name     string `json:"name"`
-	Comments string `json:"comments,omitempty"`
-}
-
-func TestAWSMessageSender(t *testing.T) {
+func TestSNSMessageSender(t *testing.T) {
 	appCfg := config.LoadTestConfig()
 	ctx := context.Background()
-	awsCfg := lo.Must(newAWSConfigFactory(ctx)(AWSConfigDeps{
-		Region:       appCfg.GetString("aws.region"),
-		BaseEndpoint: appCfg.GetString("aws.baseEndpoint"),
-	}))
+	awsCfg := newTestAWSConfig(ctx, appCfg)
 	sqsClient := sqs.NewFromConfig(awsCfg)
 	snsClient := sns.NewFromConfig(awsCfg)
 	topicARN := appCfg.GetString("aws.sns.dummyMessagesTopicArn")

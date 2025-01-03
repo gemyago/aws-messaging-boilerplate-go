@@ -10,19 +10,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/config"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
-	"github.com/go-faker/faker/v4"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func newRandomMessage() *testMessage {
-	return &testMessage{
-		Id:       faker.UUIDHyphenated(),
-		Name:     faker.Name(),
-		Comments: faker.Sentence(),
-	}
-}
 
 func TestAWSMessagesPoller(t *testing.T) {
 	appCfg := config.LoadTestConfig()
