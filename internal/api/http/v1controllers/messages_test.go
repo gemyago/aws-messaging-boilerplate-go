@@ -13,7 +13,7 @@ import (
 func TestMessages(t *testing.T) {
 	makeDeps := func(t *testing.T) MessagesControllerDeps {
 		return MessagesControllerDeps{
-			Commands: newMockMessagesCommands(t),
+			Commands: newMockDummyMessagesCommands(t),
 		}
 	}
 

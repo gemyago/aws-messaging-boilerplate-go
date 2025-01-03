@@ -20,7 +20,7 @@ type CommandsDeps struct {
 
 	RootLogger *slog.Logger
 
-	SendMessage messageSender[models.Message]
+	SendMessage messageSender[models.DummyMessage]
 }
 
 type Commands struct {
@@ -28,14 +28,14 @@ type Commands struct {
 	deps   CommandsDeps
 }
 
-func (c *Commands) PublishMessage(ctx context.Context, req *handlers.MessagesPublishMessageRequest) error {
+func (c *Commands) PublishMessage(ctx context.Context, req *handlers.MessagesPublishDummyMessageRequest) error {
 	if err := c.deps.SendMessage(ctx, req.Payload); err != nil {
 		return fmt.Errorf("failed to send message, %w", err)
 	}
 	return nil
 }
 
-func (c *Commands) ProcessMessage(ctx context.Context, msg *models.Message) error {
+func (c *Commands) ProcessMessage(ctx context.Context, msg *models.DummyMessage) error {
 	if c.logger.Enabled(ctx, slog.LevelDebug) {
 		c.logger.DebugContext(ctx, "Processing message", slog.Any("message", msg))
 	}

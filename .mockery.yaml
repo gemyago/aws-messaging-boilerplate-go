@@ -8,7 +8,7 @@ disable-version-string: true
 packages:
   github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1controllers:
     interfaces:
-      messagesCommands:
+      dummyMessagesCommands:
   log/slog:
     interfaces:
       Handler:

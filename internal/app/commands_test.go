@@ -14,26 +14,26 @@ import (
 )
 
 func TestCommands(t *testing.T) {
-	randomMessage := func() *models.Message {
-		return &models.Message{
+	randomMessage := func() *models.DummyMessage {
+		return &models.DummyMessage{
 			Id:       faker.UUIDHyphenated(),
 			Name:     faker.Name(),
 			Comments: faker.Sentence(),
 		}
 	}
-	randomMessagesPublishMessageRequest := func() *handlers.MessagesPublishMessageRequest {
-		return &handlers.MessagesPublishMessageRequest{
+	randomMessagesPublishMessageRequest := func() *handlers.MessagesPublishDummyMessageRequest {
+		return &handlers.MessagesPublishDummyMessageRequest{
 			Payload: randomMessage(),
 		}
 	}
 
 	type mockCommandDeps struct {
-		mockMessageSender *awsapi.MockMessageSender[models.Message]
+		mockMessageSender *awsapi.MockMessageSender[models.DummyMessage]
 		deps              CommandsDeps
 	}
 
 	makeMockDeps := func(t *testing.T) mockCommandDeps {
-		mockMessageSender := awsapi.NewMockMessageSender[models.Message](t)
+		mockMessageSender := awsapi.NewMockMessageSender[models.DummyMessage](t)
 		return mockCommandDeps{
 			mockMessageSender: mockMessageSender,
 			deps: CommandsDeps{
@@ -71,8 +71,8 @@ func TestCommands(t *testing.T) {
 			ctx := context.Background()
 			deps := makeMockDeps(t)
 			commands := NewCommands(deps.deps)
-			msg := models.Message(*randomMessage())
-			err := commands.ProcessMessage(ctx, &msg)
+			msg := randomMessage()
+			err := commands.ProcessMessage(ctx, msg)
 			require.NoError(t, err)
 		})
 	})

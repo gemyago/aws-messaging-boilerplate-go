@@ -8,7 +8,7 @@ import (
 
 func Register(container *dig.Container) error {
 	return di.ProvideAll(container,
-		di.ProvideAs[*app.Commands, messagesCommands],
+		di.ProvideAs[*app.Commands, dummyMessagesCommands],
 
 		NewMessagesController,
 	)

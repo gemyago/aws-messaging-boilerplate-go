@@ -13,23 +13,23 @@ func healthCheck(_ context.Context) error {
 	return nil
 }
 
-type messagesCommands interface {
-	PublishMessage(context.Context, *handlers.MessagesPublishMessageRequest) error
-	ProcessMessage(context.Context, *models.Message) error
+type dummyMessagesCommands interface {
+	PublishMessage(context.Context, *handlers.MessagesPublishDummyMessageRequest) error
+	ProcessMessage(context.Context, *models.DummyMessage) error
 }
 
 type MessagesControllerDeps struct {
 	dig.In
 
-	Commands messagesCommands
+	Commands dummyMessagesCommands
 }
 
 func NewMessagesController(deps MessagesControllerDeps) *handlers.MessagesController {
 	return handlers.BuildMessagesController().
 		HandleHealthCheck.With(healthCheck).
-		HandlePublishMessage.With(deps.Commands.PublishMessage).
-		HandleProcessMessage.With(
-		func(ctx context.Context, mpmr *handlers.MessagesProcessMessageRequest) error {
+		HandlePublishDummyMessage.With(deps.Commands.PublishMessage).
+		HandleProcessDummyMessage.With(
+		func(ctx context.Context, mpmr *handlers.MessagesProcessDummyMessageRequest) error {
 			return deps.Commands.ProcessMessage(ctx, mpmr.Payload)
 		}).
 		Finalize()
