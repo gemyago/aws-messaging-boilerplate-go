@@ -20,11 +20,10 @@ func TestSNSMessageSender(t *testing.T) {
 	ctx := context.Background()
 	awsCfg := newTestAWSConfig(ctx, appCfg)
 	sqsClient := sqs.NewFromConfig(awsCfg)
-	snsClient := sns.NewFromConfig(awsCfg)
 	topicARN := appCfg.GetString("aws.sns.dummyMessagesTopicArn")
 	queueURL := appCfg.GetString("aws.sqs.dummyMessagesQueueUrl")
 	sender := NewSNSMessageSender[testMessage](topicARN, SNSMessageSenderDeps{
-		SnsClient:  snsClient,
+		SnsClient:  sns.NewFromConfig(awsCfg),
 		RootLogger: diag.RootTestLogger(),
 	})
 
