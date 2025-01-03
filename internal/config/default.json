@@ -11,12 +11,12 @@
   "aws": {
     "region": "us-east-1",
     "sns": {
-      "messagesTopicArn": "set via env var: APP_SNS_MESSAGES_TOPIC_ARN"
+      "dummyMessagesTopicArn": "set via env var: APP_SNS_MESSAGES_TOPIC_ARN"
     },
     "sqs": {
       "maxPollWaitTimeSec": 20,
-      "messagesQueueUrl": "set via env var: APP_SQS_MESSAGES_QUEUE_URL",
-      "messagesQueueVisibilityTimeoutSec": 10
+      "dummyMessagesQueueUrl": "set via env var: APP_SQS_MESSAGES_QUEUE_URL",
+      "dummyMessagesQueueVisibilityTimeoutSec": 10
     }
   }
 }

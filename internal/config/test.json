@@ -3,10 +3,10 @@
   "aws": {
     "baseEndpoint": "http://localhost:4566",
     "sns": {
-      "messagesTopicArn": "arn:aws:sns:us-east-1:000000000000:test-dummy-messages"
+      "dummyMessagesTopicArn": "arn:aws:sns:us-east-1:000000000000:test-dummy-messages"
     },
     "sqs": {
-      "messagesQueueUrl": "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/test-aws-sqs-boilerplate-go-dummy-messages"
+      "dummyMessagesQueueUrl": "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/test-aws-sqs-boilerplate-go-dummy-messages"
     }
   }
 }

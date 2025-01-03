@@ -13,8 +13,8 @@ type Deps struct {
 	dig.In
 
 	// config
-	MessagesQueueURL                  string `name:"config.aws.sqs.messagesQueueURL"`
-	MessagesQueueVisibilityTimeoutSec int32  `name:"config.aws.sqs.messagesQueueVisibilityTimeoutSec"`
+	DummyMessagesQueueURL                  string `name:"config.aws.sqs.dummyMessagesQueueUrl"`
+	DummyMessagesQueueVisibilityTimeoutSec int32  `name:"config.aws.sqs.dummyMessagesQueueVisibilityTimeoutSec"`
 
 	// app layer
 	Commands *app.Commands
@@ -33,9 +33,9 @@ func StartPolling(ctx context.Context, deps Deps) error {
 
 	poller := deps.MessagesPoller
 	poller.RegisterQueue(awsapi.MessagesPollerQueue{
-		QueueURL:          deps.MessagesQueueURL,
+		QueueURL:          deps.DummyMessagesQueueURL,
 		Handler:           awsapi.NewRawMessageHandler(deps.Commands.ProcessMessage),
-		VisibilityTimeout: deps.MessagesQueueVisibilityTimeoutSec,
+		VisibilityTimeout: deps.DummyMessagesQueueVisibilityTimeoutSec,
 	})
 
 	return poller.Start(queuesCtx)
