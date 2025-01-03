@@ -12,40 +12,40 @@ import (
 
 // Below is to workaround unused imports.
 var _ = time.Time{}
-type _ func() Error
+type _ func() DummyMessage
 
-type paramsParserMessagesProcessMessage struct {
-	bindPayload requestParamBinder[*http.Request, *Message]
+type paramsParserMessagesProcessDummyMessage struct {
+	bindPayload requestParamBinder[*http.Request, *DummyMessage]
 }
 
-func (p *paramsParserMessagesProcessMessage) parse(router httpRouter, req *http.Request) (*MessagesProcessMessageRequest, error) {
+func (p *paramsParserMessagesProcessDummyMessage) parse(router httpRouter, req *http.Request) (*MessagesProcessDummyMessageRequest, error) {
 	bindingCtx := BindingContext{}
-	reqParams := &MessagesProcessMessageRequest{}
+	reqParams := &MessagesProcessDummyMessageRequest{}
 	// body params
 	p.bindPayload(bindingCtx.Fork("body"), readRequestBodyValue(req), &reqParams.Payload)
 	return reqParams, bindingCtx.AggregatedError()
 }
 
-func newParamsParserMessagesProcessMessage(app *HTTPApp) paramsParser[*MessagesProcessMessageRequest] {
-	return &paramsParserMessagesProcessMessage{
-		bindPayload: newRequestParamBinder(binderParams[*http.Request, *Message]{
+func newParamsParserMessagesProcessDummyMessage(app *HTTPApp) paramsParser[*MessagesProcessDummyMessageRequest] {
+	return &paramsParserMessagesProcessDummyMessage{
+		bindPayload: newRequestParamBinder(binderParams[*http.Request, *DummyMessage]{
 			required: true,
 			parseValue: parseSoloValueParamAsSoloValue(
-				parseJSONPayload[*Message],
+				parseJSONPayload[*DummyMessage],
 			),
-			validateValue: NewMessageValidator(),
+			validateValue: NewDummyMessageValidator(),
 		}),
 	}
 }
 
-type paramsParserMessagesPublishMessage struct {
-	bindTarget requestParamBinder[[]string, MessagesPublishMessageTarget]
-	bindPayload requestParamBinder[*http.Request, *Message]
+type paramsParserMessagesPublishDummyMessage struct {
+	bindTarget requestParamBinder[[]string, MessagesPublishDummyMessageTarget]
+	bindPayload requestParamBinder[*http.Request, *DummyMessage]
 }
 
-func (p *paramsParserMessagesPublishMessage) parse(router httpRouter, req *http.Request) (*MessagesPublishMessageRequest, error) {
+func (p *paramsParserMessagesPublishDummyMessage) parse(router httpRouter, req *http.Request) (*MessagesPublishDummyMessageRequest, error) {
 	bindingCtx := BindingContext{}
-	reqParams := &MessagesPublishMessageRequest{}
+	reqParams := &MessagesPublishDummyMessageRequest{}
 	// query params
 	query := req.URL.Query()
 	queryParamsCtx := bindingCtx.Fork("query")
@@ -55,22 +55,22 @@ func (p *paramsParserMessagesPublishMessage) parse(router httpRouter, req *http.
 	return reqParams, bindingCtx.AggregatedError()
 }
 
-func newParamsParserMessagesPublishMessage(app *HTTPApp) paramsParser[*MessagesPublishMessageRequest] {
-	return &paramsParserMessagesPublishMessage{
-		bindTarget: newRequestParamBinder(binderParams[[]string, MessagesPublishMessageTarget]{
+func newParamsParserMessagesPublishDummyMessage(app *HTTPApp) paramsParser[*MessagesPublishDummyMessageRequest] {
+	return &paramsParserMessagesPublishDummyMessage{
+		bindTarget: newRequestParamBinder(binderParams[[]string, MessagesPublishDummyMessageTarget]{
 			required: true,
 			parseValue: parseMultiValueParamAsSoloValue(
-				ParseMessagesPublishMessageTarget,
+				ParseMessagesPublishDummyMessageTarget,
 			),
-			validateValue: NewSimpleFieldValidator[MessagesPublishMessageTarget](
+			validateValue: NewSimpleFieldValidator[MessagesPublishDummyMessageTarget](
 			),
 		}),
-		bindPayload: newRequestParamBinder(binderParams[*http.Request, *Message]{
+		bindPayload: newRequestParamBinder(binderParams[*http.Request, *DummyMessage]{
 			required: true,
 			parseValue: parseSoloValueParamAsSoloValue(
-				parseJSONPayload[*Message],
+				parseJSONPayload[*DummyMessage],
 			),
-			validateValue: NewMessageValidator(),
+			validateValue: NewDummyMessageValidator(),
 		}),
 	}
 }

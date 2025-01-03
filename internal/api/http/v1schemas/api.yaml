@@ -26,10 +26,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /messages/publish:
+  /dummy-messages/publish:
     post:
-      summary: Publish a message to the queue
-      operationId: publishMessage
+      summary: Publish dummy message
+      operationId: publishDummyMessage
       tags:
         - messages
       parameters:
@@ -46,7 +46,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Message'
+              $ref: '#/components/schemas/DummyMessage'
         required: true
       responses:
         '202':
@@ -57,17 +57,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /messages/process:
+  /dummy-messages/process:
     post:
-      summary: Process the message
-      operationId: processMessage
+      summary: Process dummy message
+      operationId: processDummyMessage
       tags:
         - messages
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Message'
+              $ref: '#/components/schemas/DummyMessage'
         required: true
       responses:
         '202':
@@ -80,7 +80,7 @@ paths:
                 $ref: "#/components/schemas/Error"
 components:
   schemas:
-    Message:
+    DummyMessage:
       type: object
       description: Simple message object
       required:

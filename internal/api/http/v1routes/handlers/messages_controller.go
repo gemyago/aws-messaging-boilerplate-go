@@ -15,80 +15,80 @@ var _ = time.Time{}
 var _ = json.Unmarshal
 var _ = fmt.Sprint
 
-type MessagesPublishMessageTarget string
+type MessagesPublishDummyMessageTarget string
 
-// List of MessagesPublishMessageTarget values.
+// List of MessagesPublishDummyMessageTarget values.
 const (
-	MessagesPublishMessageTargetSNS MessagesPublishMessageTarget = "SNS"
-	MessagesPublishMessageTargetEVENTBRIDGE MessagesPublishMessageTarget = "EVENT_BRIDGE"
+	MessagesPublishDummyMessageTargetSNS MessagesPublishDummyMessageTarget = "SNS"
+	MessagesPublishDummyMessageTargetEVENTBRIDGE MessagesPublishDummyMessageTarget = "EVENT_BRIDGE"
 )
 
-func(v MessagesPublishMessageTarget) IsSNS() bool {
-  return v == MessagesPublishMessageTargetSNS
+func(v MessagesPublishDummyMessageTarget) IsSNS() bool {
+  return v == MessagesPublishDummyMessageTargetSNS
 }
 
-func(v MessagesPublishMessageTarget) IsEVENTBRIDGE() bool {
-  return v == MessagesPublishMessageTargetEVENTBRIDGE
+func(v MessagesPublishDummyMessageTarget) IsEVENTBRIDGE() bool {
+  return v == MessagesPublishDummyMessageTargetEVENTBRIDGE
 }
 
-func(v MessagesPublishMessageTarget) String() string {
+func(v MessagesPublishDummyMessageTarget) String() string {
 	return string(v)
 }
 
-type assignableMessagesPublishMessageTarget interface {
+type assignableMessagesPublishDummyMessageTarget interface {
 	IsSNS() bool
 	IsEVENTBRIDGE() bool
 	String() string
 }
 
-func AsMessagesPublishMessageTarget(v assignableMessagesPublishMessageTarget) (MessagesPublishMessageTarget) {
-	return MessagesPublishMessageTarget(v.String())
+func AsMessagesPublishDummyMessageTarget(v assignableMessagesPublishDummyMessageTarget) (MessagesPublishDummyMessageTarget) {
+	return MessagesPublishDummyMessageTarget(v.String())
 }
 
-func ParseMessagesPublishMessageTarget(str string, target *MessagesPublishMessageTarget) error {
+func ParseMessagesPublishDummyMessageTarget(str string, target *MessagesPublishDummyMessageTarget) error {
 	switch str {
 	case "SNS":
-		*target = MessagesPublishMessageTargetSNS
+		*target = MessagesPublishDummyMessageTargetSNS
 	case "EVENT_BRIDGE":
-		*target = MessagesPublishMessageTargetEVENTBRIDGE
+		*target = MessagesPublishDummyMessageTargetEVENTBRIDGE
 	default:
-		return fmt.Errorf("unexpected MessagesPublishMessageTarget value: %s", str)
+		return fmt.Errorf("unexpected MessagesPublishDummyMessageTarget value: %s", str)
 	}
 	return nil
 }
 
-func (v *MessagesPublishMessageTarget) UnmarshalJSON(data []byte) error {
+func (v *MessagesPublishDummyMessageTarget) UnmarshalJSON(data []byte) error {
 	var str string
 	if err := json.Unmarshal(data, &str); err != nil {
 		return err
 	}
-	return ParseMessagesPublishMessageTarget(str, v)
+	return ParseMessagesPublishDummyMessageTarget(str, v)
 }
 
-// All allowed values of MessagesPublishMessageTarget enum.
-var AllowableMessagesPublishMessageTargetValues = []MessagesPublishMessageTarget{
-	MessagesPublishMessageTargetSNS,
-	MessagesPublishMessageTargetEVENTBRIDGE,
+// All allowed values of MessagesPublishDummyMessageTarget enum.
+var AllowableMessagesPublishDummyMessageTargetValues = []MessagesPublishDummyMessageTarget{
+	MessagesPublishDummyMessageTargetSNS,
+	MessagesPublishDummyMessageTargetEVENTBRIDGE,
 }
 
 
 
-// MessagesProcessMessageRequest represents params for processMessage operation
+// MessagesProcessDummyMessageRequest represents params for processDummyMessage operation
 //
-// Request: POST /messages/process.
-type MessagesProcessMessageRequest struct {
+// Request: POST /dummy-messages/process.
+type MessagesProcessDummyMessageRequest struct {
 	// Payload is parsed from request body and declared as payload.
-	Payload *Message
+	Payload *DummyMessage
 }
 
-// MessagesPublishMessageRequest represents params for publishMessage operation
+// MessagesPublishDummyMessageRequest represents params for publishDummyMessage operation
 //
-// Request: POST /messages/publish.
-type MessagesPublishMessageRequest struct {
+// Request: POST /dummy-messages/publish.
+type MessagesPublishDummyMessageRequest struct {
 	// Target is parsed from request query and declared as target.
-	Target MessagesPublishMessageTarget
+	Target MessagesPublishDummyMessageTarget
 	// Payload is parsed from request body and declared as payload.
-	Payload *Message
+	Payload *DummyMessage
 }
 
 type MessagesController struct {
@@ -99,19 +99,19 @@ type MessagesController struct {
 	// Response type: none
 	HealthCheck httpHandlerFactory
 
-	// POST /messages/process
+	// POST /dummy-messages/process
 	//
-	// Request type: MessagesProcessMessageRequest,
+	// Request type: MessagesProcessDummyMessageRequest,
 	//
 	// Response type: none
-	ProcessMessage httpHandlerFactory
+	ProcessDummyMessage httpHandlerFactory
 
-	// POST /messages/publish
+	// POST /dummy-messages/publish
 	//
-	// Request type: MessagesPublishMessageRequest,
+	// Request type: MessagesPublishDummyMessageRequest,
 	//
 	// Response type: none
-	PublishMessage httpHandlerFactory
+	PublishDummyMessage httpHandlerFactory
 }
 
 type MessagesControllerBuilder struct {
@@ -122,26 +122,26 @@ type MessagesControllerBuilder struct {
 	// Response type: none
 	HandleHealthCheck actionBuilderNoParamsVoidResult[*MessagesControllerBuilder]
 
-	// POST /messages/process
+	// POST /dummy-messages/process
 	//
-	// Request type: MessagesProcessMessageRequest,
+	// Request type: MessagesProcessDummyMessageRequest,
 	//
 	// Response type: none
-	HandleProcessMessage actionBuilderVoidResult[*MessagesControllerBuilder, *MessagesProcessMessageRequest]
+	HandleProcessDummyMessage actionBuilderVoidResult[*MessagesControllerBuilder, *MessagesProcessDummyMessageRequest]
 
-	// POST /messages/publish
+	// POST /dummy-messages/publish
 	//
-	// Request type: MessagesPublishMessageRequest,
+	// Request type: MessagesPublishDummyMessageRequest,
 	//
 	// Response type: none
-	HandlePublishMessage actionBuilderVoidResult[*MessagesControllerBuilder, *MessagesPublishMessageRequest]
+	HandlePublishDummyMessage actionBuilderVoidResult[*MessagesControllerBuilder, *MessagesPublishDummyMessageRequest]
 }
 
 func (c *MessagesControllerBuilder) Finalize() *MessagesController {
 	return &MessagesController{
 		HealthCheck: mustInitializeAction("healthCheck", c.HandleHealthCheck.httpHandlerFactory),
-		ProcessMessage: mustInitializeAction("processMessage", c.HandleProcessMessage.httpHandlerFactory),
-		PublishMessage: mustInitializeAction("publishMessage", c.HandlePublishMessage.httpHandlerFactory),
+		ProcessDummyMessage: mustInitializeAction("processDummyMessage", c.HandleProcessDummyMessage.httpHandlerFactory),
+		PublishDummyMessage: mustInitializeAction("publishDummyMessage", c.HandlePublishDummyMessage.httpHandlerFactory),
 	}
 }
 
@@ -154,23 +154,23 @@ func BuildMessagesController() *MessagesControllerBuilder {
 	controllerBuilder.HandleHealthCheck.voidResult = true
 	controllerBuilder.HandleHealthCheck.paramsParserFactory = makeVoidParamsParser
 
-	// POST /messages/process
-	controllerBuilder.HandleProcessMessage.controllerBuilder = controllerBuilder
-	controllerBuilder.HandleProcessMessage.defaultStatusCode = 202
-	controllerBuilder.HandleProcessMessage.voidResult = true
-	controllerBuilder.HandleProcessMessage.paramsParserFactory = newParamsParserMessagesProcessMessage
+	// POST /dummy-messages/process
+	controllerBuilder.HandleProcessDummyMessage.controllerBuilder = controllerBuilder
+	controllerBuilder.HandleProcessDummyMessage.defaultStatusCode = 202
+	controllerBuilder.HandleProcessDummyMessage.voidResult = true
+	controllerBuilder.HandleProcessDummyMessage.paramsParserFactory = newParamsParserMessagesProcessDummyMessage
 
-	// POST /messages/publish
-	controllerBuilder.HandlePublishMessage.controllerBuilder = controllerBuilder
-	controllerBuilder.HandlePublishMessage.defaultStatusCode = 202
-	controllerBuilder.HandlePublishMessage.voidResult = true
-	controllerBuilder.HandlePublishMessage.paramsParserFactory = newParamsParserMessagesPublishMessage
+	// POST /dummy-messages/publish
+	controllerBuilder.HandlePublishDummyMessage.controllerBuilder = controllerBuilder
+	controllerBuilder.HandlePublishDummyMessage.defaultStatusCode = 202
+	controllerBuilder.HandlePublishDummyMessage.voidResult = true
+	controllerBuilder.HandlePublishDummyMessage.paramsParserFactory = newParamsParserMessagesPublishDummyMessage
 
 	return controllerBuilder
 }
 
 func RegisterMessagesRoutes(controller *MessagesController, app *HTTPApp) {
 	app.router.HandleRoute("GET", "/health", controller.HealthCheck(app))
-	app.router.HandleRoute("POST", "/messages/process", controller.ProcessMessage(app))
-	app.router.HandleRoute("POST", "/messages/publish", controller.PublishMessage(app))
+	app.router.HandleRoute("POST", "/dummy-messages/process", controller.ProcessDummyMessage(app))
+	app.router.HandleRoute("POST", "/dummy-messages/publish", controller.PublishDummyMessage(app))
 }
