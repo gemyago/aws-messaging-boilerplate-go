@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/service/eventbridge"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/config"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
 	"github.com/stretchr/testify/require"
@@ -16,7 +17,7 @@ import (
 func TestEventBusMessageSender(t *testing.T) {
 	appCfg := config.LoadTestConfig()
 	ctx := context.Background()
-	// awsCfg := newTestAWSConfig(ctx, appCfg)
+	awsCfg := newTestAWSConfig(ctx, appCfg)
 
 	gotMessages := make(chan testMessage, 1)
 	testSrv := httptest.NewUnstartedServer(
@@ -35,11 +36,14 @@ func TestEventBusMessageSender(t *testing.T) {
 	defer testSrv.Close()
 
 	wantMsg := newRandomMessage()
-	sender := NewEventBusMessageSender[testMessage](testSrv.URL, EventBusMessageSenderDeps{
-		EventBusName:   appCfg.GetString("aws.eventBus.name"),
-		EventBusSource: appCfg.GetString("aws.eventBus.source"),
-		RootLogger:     diag.RootTestLogger(),
-	})
+	sender := NewEventBusMessageSender[testMessage](
+		appCfg.GetString("aws.eventBus.dummyMessagesDetailType"),
+		EventBusMessageSenderDeps{
+			EventBusName:   appCfg.GetString("aws.eventBus.name"),
+			EventBusSource: appCfg.GetString("aws.eventBus.source"),
+			RootLogger:     diag.RootTestLogger(),
+			Client:         eventbridge.NewFromConfig(awsCfg),
+		})
 	require.NoError(t, sender(ctx, wantMsg))
 
 	select {
