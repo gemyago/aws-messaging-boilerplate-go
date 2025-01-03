@@ -19,7 +19,7 @@ type SNSMessageSenderDeps struct {
 }
 
 func NewSNSMessageSender[TMessage any](topicARN string, deps SNSMessageSenderDeps) MessageSender[TMessage] {
-	logger := deps.RootLogger.WithGroup("services.message-sender")
+	logger := deps.RootLogger.WithGroup("services.sns-message-sender")
 	return func(ctx context.Context, message *TMessage) error {
 		body, err := json.Marshal(message)
 		if err != nil {

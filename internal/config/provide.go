@@ -55,6 +55,9 @@ func Provide(container *dig.Container, cfg *viper.Viper) error {
 		// aws config
 		provideConfigValue(cfg, "aws.region").asString(),
 		provideConfigValue(cfg, "aws.baseEndpoint").asString(),
+		provideConfigValue(cfg, "aws.eventBus.name").asString(),
+		provideConfigValue(cfg, "aws.eventBus.source").asString(),
+		provideConfigValue(cfg, "aws.eventBus.dummyMessagesDetailType").asString(),
 		provideConfigValue(cfg, "aws.sns.dummyMessagesTopicArn").asString(),
 		provideConfigValue(cfg, "aws.sqs.maxPollWaitTimeSec").asInt32(),
 		provideConfigValue(cfg, "aws.sqs.dummyMessagesQueueUrl").asString(),

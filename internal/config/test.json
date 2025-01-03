@@ -5,6 +5,9 @@
   },
   "aws": {
     "baseEndpoint": "http://localhost:4566",
+    "eventBus": {
+      "name": "test-app-events"
+    },
     "sns": {
       "dummyMessagesTopicArn": "arn:aws:sns:us-east-1:000000000000:test-dummy-messages"
     },

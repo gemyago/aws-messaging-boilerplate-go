@@ -10,6 +10,11 @@
   },
   "aws": {
     "region": "us-east-1",
+    "eventBus": {
+      "name": "set via env var: APP_EVENT_BUS_NAME",
+      "source": "aws-sqs-boilerplate-go",
+      "dummyMessagesDetailType": "dummy-message"
+    },
     "sns": {
       "dummyMessagesTopicArn": "set via env var: APP_SNS_MESSAGES_TOPIC_ARN"
     },

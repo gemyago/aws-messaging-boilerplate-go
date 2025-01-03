@@ -2,6 +2,9 @@
   "defaultLogLevel": "DEBUG",
   "aws": {
     "baseEndpoint": "http://localhost:4566",
+    "eventBus": {
+      "name": "app-events"
+    },
     "sns": {
       "dummyMessagesTopicArn": "arn:aws:sns:us-east-1:000000000000:dummy-messages"
     },  
