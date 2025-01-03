@@ -10,7 +10,7 @@ module "event_bus_http_targets" {
     {
       event_source = "aws-sqs-boilerplate-go",
       detail_type  = "dummy-message",
-      endpoint     = "${var.service_endpoint}/messages/process",
+      endpoint     = "${var.service_endpoint}/dummy-messages/process",
       method       = "POST",
       max_rps      = 20
     }

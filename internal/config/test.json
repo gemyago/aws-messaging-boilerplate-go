@@ -1,5 +1,8 @@
 {
   "defaultLogLevel": "DEBUG",
+  "httpServer": {
+    "port": 418080
+  },
   "aws": {
     "baseEndpoint": "http://localhost:4566",
     "sns": {

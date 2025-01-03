@@ -30,5 +30,5 @@ module "test_api_service" {
   resources_prefix         = "${var.resources_prefix}test-"
   resources_description    = var.resources_description
   aws_primary_region       = var.aws_primary_region
-  service_endpoint         = "http://localhost:8080" # TODO: Use a different port
+  service_endpoint         = "http://localhost:418080"
 }
