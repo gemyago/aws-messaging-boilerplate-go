@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"go.uber.org/dig"
 )
 
@@ -15,7 +14,6 @@ type EventBusMessageSenderDeps struct {
 	EventBusSource string `name:"config.aws.eventBus.source"`
 
 	RootLogger *slog.Logger
-	SnsClient  *sns.Client
 }
 
 func NewEventBusMessageSender[TMessage any](detailType string, deps EventBusMessageSenderDeps) MessageSender[TMessage] {
