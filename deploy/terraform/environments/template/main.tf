@@ -2,7 +2,7 @@ module "api_infra" {
   source                = "../../modules/app-infra"
   resources_prefix      = var.resources_prefix
   resources_description = var.resources_description
-  local_stack_env       = true
+  local_stack_env       = false # Set to true if running localstack
 }
 module "api_service" {
   source                   = "../../modules/api-service"

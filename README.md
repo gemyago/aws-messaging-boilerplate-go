@@ -157,6 +157,8 @@ make apply
 unset DEPLOY_ENV
 ```
 
+You may want to use aws specific environment variables for the deployment. You may create `.envrc.local` in a root folder and place your env variables there. Please do `direnv reload` after updating the file.
+
 ## Useful commands
 
 ```bash
