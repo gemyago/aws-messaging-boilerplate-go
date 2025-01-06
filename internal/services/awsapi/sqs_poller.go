@@ -13,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
+	"github.com/gofrs/uuid/v5"
 	"go.uber.org/dig"
 	"golang.org/x/sync/errgroup"
 )
@@ -102,8 +103,21 @@ func (p *MessagesPoller) startProcessingWorkers(
 		processingWorkerChannels[i] = make(chan processingData)
 		go func(ch <-chan processingData) {
 			for data := range ch {
-				if err := data.handler(ctx, data.rawMessage); err != nil {
-					p.logger.ErrorContext(ctx, "Failed to process message", diag.ErrAttr(err))
+				handlerCtx := diag.SetLogAttributesToContext(ctx, diag.LogAttributes{
+					CorrelationID: slog.StringValue(uuid.Must(uuid.NewV4()).String()),
+				})
+				messageID := *data.rawMessage.MessageId
+				if err := data.handler(handlerCtx, data.rawMessage); err != nil {
+					p.logger.ErrorContext(ctx,
+						fmt.Sprintf("Failed to process message: %s", messageID),
+						diag.ErrAttr(err),
+						slog.Any("attributes", data.rawMessage.MessageAttributes),
+					)
+				} else {
+					p.logger.InfoContext(ctx,
+						fmt.Sprintf("Message processed: %s", messageID),
+						slog.Any("attributes", data.rawMessage.MessageAttributes),
+					)
 				}
 			}
 		}(processingWorkerChannels[i])
