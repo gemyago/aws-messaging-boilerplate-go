@@ -78,7 +78,7 @@ func (p *MessagesPoller) wrapRawMessageHandlerWithDeleteOnSuccess(
 	return func(ctx context.Context, rawMessage types.Message) error {
 		err := handler(ctx, rawMessage)
 		if err != nil {
-			return fmt.Errorf("failed to handle message with target handler, %w", err)
+			return fmt.Errorf("failed to handle message with target handler: %w", err)
 		}
 		if _, err = p.deps.SqsClient.DeleteMessage(ctx, &sqs.DeleteMessageInput{
 			QueueUrl:      aws.String(queueURL),
