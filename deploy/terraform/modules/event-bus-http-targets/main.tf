@@ -61,7 +61,7 @@ resource "random_id" "destination_name" {
   prefix      = "${var.resources_prefix}${var.app_name}-"
 
   keepers = {
-    index    = each.key
+    index = each.key
   }
 }
 
