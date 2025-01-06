@@ -16,4 +16,6 @@ var _ = fmt.Sprint
 // DummyMessage - Simple message object
 type DummyMessage struct { 
 	Message string `json:"message"`
+	// If true, the message processing will fail. Use this to test error handling, retries and DLQ. 
+	FailProcessing bool `json:"failProcessing,omitempty"`
 }

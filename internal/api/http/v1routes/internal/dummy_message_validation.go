@@ -14,8 +14,11 @@ func NewDummyMessageValidator() FieldValidator[*DummyMessage] {
 	validateMessage := NewSimpleFieldValidator[string](
 		EnsureNonDefault[string],
 	)
+	validateFailProcessing := NewSimpleFieldValidator[bool](
+	)
 	
 	return func(bindingCtx *BindingContext, value *DummyMessage) {
 		validateMessage(bindingCtx.Fork("message"), value.Message)
+		validateFailProcessing(bindingCtx.Fork("failProcessing"), value.FailProcessing)
 	}
 }

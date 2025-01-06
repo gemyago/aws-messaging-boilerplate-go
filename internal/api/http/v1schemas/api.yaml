@@ -88,6 +88,11 @@ components:
       properties:
         message:
           type: string
+        failProcessing:
+          type: boolean
+          description: |
+            If true, the message processing will fail.
+            Use this to test error handling, retries and DLQ.
     Error:
       type: object
       required:
