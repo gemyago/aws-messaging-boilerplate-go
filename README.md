@@ -114,7 +114,9 @@ Deployment configuration is defined per environment and are stored in the [envir
 
 In order to create a new environment please create a new directory under the `environments` folder. Please name the directory according to the environment you are deploying to. If you do not wish to commit the configuration, please add `-local` suffix to the directory name (e.g `my-aws-local`). 
 
-Use the [template](./deploy/terraform/environments/template) as a starting point for the new configuration.Update `backend.tf` and specify bucket name to store terraform state. Optionally review and update other files as required.
+Use the [template](./deploy/terraform/environments/template) as a starting point for the new configuration. Update `backend.tf` and specify bucket name to store terraform state. Review and update other files as required, especially:
+* `variables.tf`
+  * Consider adding default values for `resources_prefix` and `resources_description`. This may be useful in a shared AWS account to distinguish resources.
 
 For each new environment make sure the state bucket is available. You may use aws cli to create the bucket:
 ```bash
