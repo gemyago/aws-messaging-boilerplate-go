@@ -80,13 +80,23 @@ func TestCommands(t *testing.T) {
 	})
 
 	t.Run("ProcessMessage", func(t *testing.T) {
-		t.Run("should be noop", func(t *testing.T) {
+		t.Run("should be noop for regular message", func(t *testing.T) {
 			ctx := context.Background()
 			deps := makeMockDeps(t)
 			commands := NewCommands(deps.deps)
 			msg := randomMessage()
 			err := commands.ProcessMessage(ctx, msg)
 			require.NoError(t, err)
+		})
+
+		t.Run("should fail if flag is set", func(t *testing.T) {
+			ctx := context.Background()
+			deps := makeMockDeps(t)
+			commands := NewCommands(deps.deps)
+			msg := randomMessage()
+			msg.FailProcessing = true
+			err := commands.ProcessMessage(ctx, msg)
+			require.Error(t, err)
 		})
 	})
 }

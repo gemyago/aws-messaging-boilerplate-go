@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 
@@ -42,11 +43,11 @@ func (c *Commands) PublishMessage(ctx context.Context, req *handlers.MessagesPub
 }
 
 func (c *Commands) ProcessMessage(ctx context.Context, msg *models.DummyMessage) error {
-	if c.logger.Enabled(ctx, slog.LevelDebug) {
-		c.logger.DebugContext(ctx, "Processing message", slog.Any("message", msg))
-	}
+	c.logger.DebugContext(ctx, "Processing message", slog.Any("message", msg))
 
-	// TODO: Some processing logic. Probably just simulate CPU-bound work.
+	if msg.FailProcessing {
+		return errors.New("simulated processing error")
+	}
 
 	return nil
 }
