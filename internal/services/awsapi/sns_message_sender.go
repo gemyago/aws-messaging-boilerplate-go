@@ -32,7 +32,10 @@ func NewSNSMessageSender[TMessage any](topicARN string, deps SNSMessageSenderDep
 		if err != nil {
 			return fmt.Errorf("failed send message to sqs queue, %w", err)
 		}
-		logger.InfoContext(ctx, "Message sent", slog.String("messageId", *res.MessageId))
+		logger.InfoContext(ctx, "Message sent",
+			slog.String("topicARN", topicARN),
+			slog.String("messageId", *res.MessageId),
+		)
 		return nil
 	}
 }

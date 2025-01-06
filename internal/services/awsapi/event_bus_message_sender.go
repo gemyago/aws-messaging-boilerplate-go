@@ -43,7 +43,11 @@ func NewEventBusMessageSender[TMessage any](detailType string, deps EventBusMess
 			return fmt.Errorf("failed send message to event bus, %w", err)
 		}
 		logger.DebugContext(ctx, "PutEvents response", slog.Any("response", res))
-		logger.InfoContext(ctx, "Message sent", slog.String("messageId", "n/a"))
+		logger.InfoContext(ctx, "Message sent",
+			slog.String("eventBusName", deps.EventBusName),
+			slog.String("eventBusSource", deps.EventBusSource),
+			slog.String("messageId", "n/a"), // TODO
+		)
 		return nil
 	}
 }
