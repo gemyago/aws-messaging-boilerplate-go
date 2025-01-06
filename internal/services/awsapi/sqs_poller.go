@@ -109,13 +109,15 @@ func (p *MessagesPoller) startProcessingWorkers(
 				messageID := *data.rawMessage.MessageId
 				if err := data.handler(handlerCtx, data.rawMessage); err != nil {
 					p.logger.ErrorContext(ctx,
-						fmt.Sprintf("Failed to process message: %s", messageID),
+						"Failed to process message",
 						diag.ErrAttr(err),
+						slog.String("messageID", messageID),
 						slog.Any("attributes", data.rawMessage.MessageAttributes),
 					)
 				} else {
 					p.logger.InfoContext(ctx,
-						fmt.Sprintf("Message processed: %s", messageID),
+						"Message processed",
+						slog.String("messageID", messageID),
 						slog.Any("attributes", data.rawMessage.MessageAttributes),
 					)
 				}
