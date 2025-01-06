@@ -84,14 +84,9 @@ components:
       type: object
       description: Simple message object
       required:
-        - id
-        - name
+        - message
       properties:
-        id:
-          type: string
-        name:
-          type: string
-        comments:
+        message:
           type: string
     Error:
       type: object

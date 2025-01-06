@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 handlers/handlers.go
 handlers/messages_controller.go
 handlers/messages_params.go

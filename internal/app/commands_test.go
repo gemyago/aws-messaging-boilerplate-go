@@ -16,9 +16,7 @@ import (
 func TestCommands(t *testing.T) {
 	randomMessage := func() *models.DummyMessage {
 		return &models.DummyMessage{
-			Id:       faker.UUIDHyphenated(),
-			Name:     faker.Name(),
-			Comments: faker.Sentence(),
+			Message: faker.Sentence(),
 		}
 	}
 	randomMessagesPublishMessageRequest := func() *handlers.MessagesPublishDummyMessageRequest {

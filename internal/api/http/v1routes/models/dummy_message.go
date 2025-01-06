@@ -15,7 +15,5 @@ var _ = fmt.Sprint
 
 // DummyMessage - Simple message object
 type DummyMessage struct { 
-	Id string `json:"id"`
-	Name string `json:"name"`
-	Comments string `json:"comments,omitempty"`
+	Message string `json:"message"`
 }
