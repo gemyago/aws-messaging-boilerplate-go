@@ -108,11 +108,15 @@ This section describes how to deploy the application to AWS. Prior to deploying 
 aws sts get-caller-identity
 ```
 
-### Deployment configuration
+### Deployment
 
-First step is to prepare terraform deployment configuration. Please place it under `deploy/terraform/deploy-env` directory. Please name the directory according to the environment you are deploying to. If you do not wish to commit the configuration, please add `-local` suffix to the directory name (e.g `my-aws-local`). Use template `deploy/terraform/deploy-env/template` as a starting point. 
+Deployment configuration is defined per environment and are stored in the [environments](./deploy/terraform/environments) directory. The `local` is a default environment that points to localstack and suitable for local development.
 
-Update `state-bucket.s3.tfbackend` - specify the bucket name to store terraform state. The bucket must be created manually. Make sure the bucket is private and has versioning enabled. You may use aws cli to create the bucket:
+In order to create a new environment please create a new directory under the `environments` folder. Please name the directory according to the environment you are deploying to. If you do not wish to commit the configuration, please add `-local` suffix to the directory name (e.g `my-aws-local`). 
+
+Use the [template](./deploy/terraform/environments/template) as a starting point for the new configuration.Update `backend.tf` and specify bucket name to store terraform state. Optionally review and update other files as required.
+
+For each new environment make sure the state bucket is available. You may use aws cli to create the bucket:
 ```bash
 export bucket_name=<bucket_name>
 export region=<region>
@@ -131,9 +135,9 @@ To deploy terraform configuration, run the following commands (from deploy/terra
 # to localstack
 export DEPLOY_ENV=<env>
 
-# Remove previous state if needed
-# Obligatory if chancing DEPLOY_ENV
-rm -r -f .terraform
+# Optionally cleanup terraform working directory.
+# Obligatory if updating backend or changing aws credentials.
+rm -r -f ${DEPLOY_ENV}/.terraform
 
 make init
 
