@@ -158,6 +158,12 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 			queue.Handler,
 		)
 		grp.Go(func() error {
+			p.logger.DebugContext(ctx,
+				"Polling messages from queue",
+				slog.String("queueURL", queue.QueueURL),
+				slog.String("visibilityTimeout", fmt.Sprintf("%ds", queue.VisibilityTimeout)),
+				slog.Int64("pollWaitTimeSec", int64(p.deps.MaxPollWaitTimeSec)),
+			)
 			for {
 				gotMessages, err := p.deps.SqsClient.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 					QueueUrl:            &queue.QueueURL,
@@ -169,6 +175,11 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 				if shouldContinue, err = p.handleReceiveError(queue.QueueURL, err); !shouldContinue {
 					return err
 				}
+				p.logger.DebugContext(ctx,
+					"Processing queue messages",
+					slog.String("queueURL", queue.QueueURL),
+					slog.Int("messagesCount", len(gotMessages.Messages)),
+				)
 				for _, rawMessage := range gotMessages.Messages {
 					for _, ch := range processingWorkerChannels {
 						ch <- processingData{
