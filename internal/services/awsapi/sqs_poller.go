@@ -112,13 +112,15 @@ func (p *MessagesPoller) startProcessingWorkers(
 						"Failed to process message",
 						diag.ErrAttr(err),
 						slog.String("messageID", messageID),
-						slog.Any("attributes", data.rawMessage.MessageAttributes),
+						slog.Any("messageAttributes", data.rawMessage.MessageAttributes),
+						slog.Any("systemAttributes", data.rawMessage.Attributes),
 					)
 				} else {
 					p.logger.InfoContext(ctx,
 						"Message processed",
 						slog.String("messageID", messageID),
-						slog.Any("attributes", data.rawMessage.MessageAttributes),
+						slog.Any("messageAttributes", data.rawMessage.MessageAttributes),
+						slog.Any("systemAttributes", data.rawMessage.Attributes),
 					)
 				}
 			}
@@ -166,10 +168,12 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 			)
 			for {
 				gotMessages, err := p.deps.SqsClient.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
-					QueueUrl:            &queue.QueueURL,
-					MaxNumberOfMessages: p.maxProcessingWorkers,
-					WaitTimeSeconds:     p.deps.MaxPollWaitTimeSec,
-					VisibilityTimeout:   queue.VisibilityTimeout,
+					QueueUrl:                    &queue.QueueURL,
+					MaxNumberOfMessages:         p.maxProcessingWorkers,
+					WaitTimeSeconds:             p.deps.MaxPollWaitTimeSec,
+					VisibilityTimeout:           queue.VisibilityTimeout,
+					MessageAttributeNames:       []string{"All"},
+					MessageSystemAttributeNames: []types.MessageSystemAttributeName{"All"},
 				})
 				var shouldContinue bool
 				if shouldContinue, err = p.handleReceiveError(queue.QueueURL, err); !shouldContinue {
@@ -179,6 +183,7 @@ func (p *MessagesPoller) Start(ctx context.Context) error {
 					"Processing queue messages",
 					slog.String("queueURL", queue.QueueURL),
 					slog.Int("messagesCount", len(gotMessages.Messages)),
+					slog.Any("resultMetadata", gotMessages.ResultMetadata),
 				)
 				for _, rawMessage := range gotMessages.Messages {
 					for _, ch := range processingWorkerChannels {
