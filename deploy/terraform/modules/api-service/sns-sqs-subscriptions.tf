@@ -5,7 +5,7 @@ module "sns_sqs_subscriptions" {
   resources_description = var.resources_description
   subscriptions = [
     {
-      subscription_id = "dummy_messages"
+      subscription_id = "dummy-messages"
       topic_arn       = var.dummy_messages_topic_arn
     }
   ]
