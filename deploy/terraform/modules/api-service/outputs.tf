@@ -1,3 +1,3 @@
-output "dummy_messages_queue_url" {
-  value = aws_sqs_queue.dummy_messages.url
+output "sns_sqs_subscriptions" {
+  value = module.sns_sqs_subscriptions
 }

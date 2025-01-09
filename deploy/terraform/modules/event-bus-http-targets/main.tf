@@ -84,7 +84,7 @@ resource "aws_iam_role" "http_target_role" {
       tags, tags_all
     ]
   }
-  
+
   description = "Role for the EventBridge ${var.bus_name} HTTP bus target. ${var.resources_description}"
 
   assume_role_policy = jsonencode({
