@@ -138,4 +138,21 @@ resource "aws_cloudwatch_event_target" "api_target" {
       "X-Message-Time"   = "$.time"
     }
   }
+
+  dead_letter_config {
+    arn = aws_sqs_queue.dead_letter[each.key].arn
+  }
+
+  retry_policy {
+    maximum_retry_attempts       = 1 # TODO: This needs to be parameterized
+    maximum_event_age_in_seconds = 180
+  }
+}
+
+resource "aws_sqs_queue" "dead_letter" {
+  for_each = {
+    for index, target in local.http_targets :
+    target.key => target
+  }
+  name = "${var.resources_prefix}${var.app_name}-${each.value.key}-dlq"
 }
