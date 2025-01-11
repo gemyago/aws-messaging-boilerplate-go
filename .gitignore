@@ -8,3 +8,4 @@ test.log
 .venv
 .localstack-data
 .envrc.local
+internal/config/*-user.json

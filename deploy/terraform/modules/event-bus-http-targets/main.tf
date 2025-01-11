@@ -149,6 +149,33 @@ resource "aws_cloudwatch_event_target" "api_target" {
   }
 }
 
+# allow event bridge rule to send messages to the dead letter queue
+resource "aws_sqs_queue_policy" "allow_event_bridge_dlq" {
+  for_each = {
+    for index, target in local.http_targets :
+    target.key => target
+  }
+  queue_url = aws_sqs_queue.dead_letter[each.key].id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "events.amazonaws.com"
+        },
+        Action   = "sqs:SendMessage",
+        Resource = aws_sqs_queue.dead_letter[each.key].arn,
+        Condition = {
+          ArnEquals = {
+            "aws:SourceArn" = aws_cloudwatch_event_rule.capture_source_events[each.key].arn
+          }
+        }
+      }
+    ]
+  })
+}
+
 resource "aws_sqs_queue" "dead_letter" {
   for_each = {
     for index, target in local.http_targets :

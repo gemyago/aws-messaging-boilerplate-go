@@ -9,6 +9,7 @@
     "writeTimeout": "8s"
   },
   "aws": {
+    "baseEndpoint": "",
     "region": "us-east-1",
     "eventBus": {
       "name": "set via env var: APP_EVENT_BUS_NAME",
