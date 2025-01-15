@@ -108,6 +108,13 @@ This section describes how to deploy the application to AWS. Prior to deploying 
 aws sts get-caller-identity
 ```
 
+The deployment is done using terraform. If changing `providers.tf` or `versions.tf` for any environment, please make sure to produce updated lock file and commit changes. 
+
+```bash
+# Run below from deploy/terraform directory
+make providers_lock
+``` 
+
 ### Deployment
 
 Deployment configuration is defined per environment and are stored in the [environments](./deploy/terraform/environments) directory. The `local` is a default environment that points to localstack and suitable for local development.
