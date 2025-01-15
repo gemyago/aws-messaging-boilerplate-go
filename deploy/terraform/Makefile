@@ -70,8 +70,14 @@ endif
 %/$(terraform_backend_prefix_file):
 	echo 'key  = "$(app_name)-state"' > $@
 
-providers_lock: $(terraform) check-deploy-env
-	$(terraform_with_args) providers lock
+all_tf_lock_files := $(patsubst %/versions.tf,%/.terraform.lock.hcl,$(wildcard environments/*/versions.tf))
+
+environments/%/.terraform.lock.hcl: environments/%/versions.tf environments/%/providers.tf
+	$(terraform) -chdir=$(@D) get
+	$(terraform) -chdir=$(@D) providers lock
+
+.PHONY: providers_lock
+providers_lock: $(terraform) $(all_tf_lock_files)
 
 init: $(terraform) check-deploy-env $(env_root)/$(terraform_backend_prefix_file)
 	$(terraform_with_args) init -backend-config=$(terraform_backend_prefix_file)
