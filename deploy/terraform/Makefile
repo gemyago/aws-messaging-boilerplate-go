@@ -73,8 +73,7 @@ endif
 all_tf_lock_files := $(patsubst %/versions.tf,%/.terraform.lock.hcl,$(wildcard environments/*/versions.tf))
 
 environments/%/.terraform.lock.hcl: environments/%/versions.tf environments/%/providers.tf
-	$(terraform) -chdir=$(@D) get
-	$(terraform) -chdir=$(@D) providers lock
+	$(terraform) -chdir=$(@D) init -backend=false -upgrade
 
 .PHONY: providers_lock
 providers_lock: $(terraform) $(all_tf_lock_files)

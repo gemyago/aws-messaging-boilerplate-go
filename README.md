@@ -108,7 +108,7 @@ This section describes how to deploy the application to AWS. Prior to deploying 
 aws sts get-caller-identity
 ```
 
-The deployment is done using terraform. If changing `providers.tf` or `versions.tf` for any environment, please make sure to produce updated lock file and commit changes. 
+The deployment is done using terraform. If changing `providers.tf` or `versions.tf` for any environment, please make sure to produce updated lock file and commit changes.
 
 ```bash
 # Run below from deploy/terraform directory
