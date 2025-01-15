@@ -70,6 +70,9 @@ endif
 %/$(terraform_backend_prefix_file):
 	echo 'key  = "$(app_name)-state"' > $@
 
+providers_lock: $(terraform) check-deploy-env
+	$(terraform_with_args) providers lock
+
 init: $(terraform) check-deploy-env $(env_root)/$(terraform_backend_prefix_file)
 	$(terraform_with_args) init -backend-config=$(terraform_backend_prefix_file)
 
