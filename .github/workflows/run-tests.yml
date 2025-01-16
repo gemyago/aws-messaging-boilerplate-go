@@ -54,6 +54,10 @@ jobs:
 
     - run: make test
 
+    - name: Output localstack logs
+      if: failure()
+      run: docker compose logs
+
     - name: Store Test Artifacts
       uses: actions/upload-artifact@v4
       with:
