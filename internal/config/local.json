@@ -9,7 +9,7 @@
       "dummyMessagesTopicArn": "arn:aws:sns:us-east-1:000000000000:dummy-messages"
     },  
     "sqs": {
-      "dummyMessagesQueueUrl": "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/aws-sqs-boilerplate-go-dummy-messages"
+      "dummyMessagesQueueUrl": "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/aws-messaging-boilerplate-go-dummy-messages"
     }
   }
 }
