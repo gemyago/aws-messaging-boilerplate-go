@@ -7,7 +7,7 @@ package queues
 import (
 	context "context"
 
-	awsapi "github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
+	awsapi "github.com/gemyago/aws-messaging-boilerplate-go/internal/services/awsapi"
 
 	mock "github.com/stretchr/testify/mock"
 )

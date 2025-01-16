@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/eventbridge"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/config"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/config"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/diag"
 	"github.com/stretchr/testify/require"
 )
 

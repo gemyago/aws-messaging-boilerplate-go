@@ -9,7 +9,7 @@ module "event_bus_http_targets" {
   http_targets = [
     {
       target_id    = "process-dummy-messages",
-      event_source = "aws-sqs-boilerplate-go",
+      event_source = "aws-messaging-boilerplate-go",
       detail_type  = "dummy-message",
       endpoint     = "${var.service_endpoint}/dummy-messages/process",
       method       = "POST",

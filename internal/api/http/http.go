@@ -5,11 +5,11 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/server"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1controllers"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/handlers"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/di"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/server"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1controllers"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/handlers"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/di"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/diag"
 	"go.uber.org/dig"
 )
 

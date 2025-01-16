@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	. "github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/models"
-	. "github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/internal"
+	. "github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/models"
+	. "github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/internal"
 )
 
 // Below is to workaround unused imports.

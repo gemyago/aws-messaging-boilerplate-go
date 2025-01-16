@@ -5,10 +5,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/handlers"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/models"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/handlers"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/models"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/diag"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/services/awsapi"
 	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/require"
 )

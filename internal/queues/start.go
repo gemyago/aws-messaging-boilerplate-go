@@ -3,9 +3,9 @@ package queues
 import (
 	"context"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/app"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/app"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/services"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/services/awsapi"
 	"go.uber.org/dig"
 )
 

@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/middleware"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/middleware"
 	sloghttp "github.com/samber/slog-http"
 	"go.uber.org/dig"
 )

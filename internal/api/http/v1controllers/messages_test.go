@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/server"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/handlers"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/server"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/handlers"
 	"github.com/stretchr/testify/assert"
 )
 

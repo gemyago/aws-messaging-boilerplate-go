@@ -1,7 +1,7 @@
-# aws-sqs-boilerplate-go
+# aws-messaging-boilerplate-go
 
-[![Tests](https://github.com/gemyago/aws-sqs-boilerplate-go/actions/workflows/run-tests.yml/badge.svg)](https://github.com/gemyago/aws-sqs-boilerplate-go/actions/workflows/run-tests.yml)
-[![Coverage](https://raw.githubusercontent.com/gemyago/aws-sqs-boilerplate-go/test-artifacts/coverage/golang-coverage.svg)](https://htmlpreview.github.io/?https://raw.githubusercontent.com/gemyago/aws-sqs-boilerplate-go/test-artifacts/coverage/golang-coverage.html)
+[![Tests](https://github.com/gemyago/aws-messaging-boilerplate-go/actions/workflows/run-tests.yml/badge.svg)](https://github.com/gemyago/aws-messaging-boilerplate-go/actions/workflows/run-tests.yml)
+[![Coverage](https://raw.githubusercontent.com/gemyago/aws-messaging-boilerplate-go/test-artifacts/coverage/golang-coverage.svg)](https://htmlpreview.github.io/?https://raw.githubusercontent.com/gemyago/aws-messaging-boilerplate-go/test-artifacts/coverage/golang-coverage.html)
 
 Basic golang boilerplate for backend project that includes AWS SQS usage example.
 
@@ -166,7 +166,7 @@ You may want to use aws specific environment variables for the deployment. You m
 # Use awslocal to send event to localstack
 aws events put-events --entries '[
   {
-    "Source": "aws-sqs-boilerplate-go",
+    "Source": "aws-messaging-boilerplate-go",
     "DetailType": "dummy-message",
     "Detail": "{\"message\": \"123\"}",
     "EventBusName": "app-events"

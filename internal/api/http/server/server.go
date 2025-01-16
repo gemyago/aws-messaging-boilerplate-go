@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/services"
 	"go.uber.org/dig"
 )
 

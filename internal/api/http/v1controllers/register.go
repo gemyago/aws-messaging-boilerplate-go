@@ -1,8 +1,8 @@
 package v1controllers
 
 import (
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/app"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/di"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/app"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/di"
 	"go.uber.org/dig"
 )
 

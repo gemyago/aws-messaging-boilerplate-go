@@ -4,7 +4,7 @@ package internal
 
 import (
 	"time"
-	. "github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/models"
+	. "github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/models"
 )
 
 // Below is to workaround unused imports.

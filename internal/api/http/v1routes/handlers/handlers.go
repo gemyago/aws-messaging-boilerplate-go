@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/internal"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/internal"
 	"golang.org/x/exp/constraints"
 )
 

@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/diag"
 	"github.com/gofrs/uuid/v5"
 	"go.uber.org/dig"
 	"golang.org/x/sync/errgroup"

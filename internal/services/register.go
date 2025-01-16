@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/di"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/di"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/services/awsapi"
 	"go.uber.org/dig"
 )
 

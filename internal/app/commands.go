@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/handlers"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/models"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/handlers"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/models"
 	"github.com/samber/lo"
 	"go.uber.org/dig"
 )

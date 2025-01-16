@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1routes/models"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/di"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/services/awsapi"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/v1routes/models"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/di"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/services/awsapi"
 	"go.uber.org/dig"
 )
 

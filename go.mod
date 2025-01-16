@@ -1,4 +1,4 @@
-module github.com/gemyago/aws-sqs-boilerplate-go
+module github.com/gemyago/aws-messaging-boilerplate-go
 
 go 1.23
 
