@@ -70,7 +70,7 @@ paths:
               $ref: '#/components/schemas/DummyMessage'
         required: true
       responses:
-        '202':
+        '204':
           description: Request succeeded
         default:
           description: unexpected error

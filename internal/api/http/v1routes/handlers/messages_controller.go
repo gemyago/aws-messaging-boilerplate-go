@@ -156,7 +156,7 @@ func BuildMessagesController() *MessagesControllerBuilder {
 
 	// POST /dummy-messages/process
 	controllerBuilder.HandleProcessDummyMessage.controllerBuilder = controllerBuilder
-	controllerBuilder.HandleProcessDummyMessage.defaultStatusCode = 202
+	controllerBuilder.HandleProcessDummyMessage.defaultStatusCode = 204
 	controllerBuilder.HandleProcessDummyMessage.voidResult = true
 	controllerBuilder.HandleProcessDummyMessage.paramsParserFactory = newParamsParserMessagesProcessDummyMessage
 
