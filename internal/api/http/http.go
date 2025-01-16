@@ -24,7 +24,7 @@ type V1RoutesAppDeps struct {
 	Router *server.MuxRouterAdapter
 }
 
-func NewV1RoutesApp(deps V1RoutesAppDeps) *handlers.HTTPApp {
+func NewV1RoutesApp(deps V1RoutesAppDeps) *handlers.HTTPApp { // coverage-ignore // Little value in testing wireup code.
 	logger := deps.RootLogger.WithGroup("http.v1routes")
 	return handlers.NewHTTPApp(deps.Router,
 		handlers.WithLogger(logger),
@@ -35,7 +35,7 @@ func NewV1RoutesApp(deps V1RoutesAppDeps) *handlers.HTTPApp {
 	)
 }
 
-func Register(container *dig.Container) error {
+func Register(container *dig.Container) error { // coverage-ignore // Little value in testing wireup code.
 	return errors.Join(
 		v1controllers.Register(container),
 		di.ProvideAll(container,

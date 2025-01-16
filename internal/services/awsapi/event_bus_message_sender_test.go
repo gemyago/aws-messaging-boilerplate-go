@@ -22,7 +22,7 @@ func TestEventBusMessageSender(t *testing.T) {
 
 	t.Run("send message to event bus", func(t *testing.T) {
 		gotMessages := make(chan testMessage, 1)
-		testListener, err := net.Listen("tcp", "localhost:48080")
+		testListener, err := net.Listen("tcp", "0.0.0.0:48080")
 		require.NoError(t, err)
 
 		testSrv := httptest.NewUnstartedServer(
