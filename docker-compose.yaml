@@ -11,3 +11,5 @@ services:
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./.localstack-data}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
