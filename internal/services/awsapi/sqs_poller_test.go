@@ -2,14 +2,17 @@ package awsapi
 
 import (
 	"context"
+	"encoding/json"
 
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/gemyago/aws-messaging-boilerplate-go/internal/config"
 	"github.com/gemyago/aws-messaging-boilerplate-go/internal/diag"
+	"github.com/go-faker/faker/v4"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -88,5 +91,38 @@ func TestAWSMessagesPoller(t *testing.T) {
 
 		cancel()
 		require.NoError(t, <-startComplete)
+	})
+}
+
+func TestNewRawMessageHandler(t *testing.T) {
+	type TestMessage struct {
+		Data string `json:"data"`
+	}
+
+	t.Run("should unmarshal the message and delegate to target handler", func(t *testing.T) {
+		wantMessage := &TestMessage{Data: faker.Sentence()}
+		handlerInvoked := false
+		handler := NewRawMessageHandler(func(_ context.Context, message *TestMessage) error {
+			assert.Equal(t, wantMessage, message)
+			handlerInvoked = true
+			return nil
+		})
+		rawMessage := types.Message{
+			Body: lo.ToPtr(string(lo.Must(json.Marshal(wantMessage)))),
+		}
+		gotErr := handler(context.Background(), rawMessage)
+		require.NoError(t, gotErr)
+		assert.True(t, handlerInvoked)
+	})
+
+	t.Run("should return an error if the message is not valid JSON", func(t *testing.T) {
+		handler := NewRawMessageHandler(func(_ context.Context, _ *TestMessage) error {
+			return nil
+		})
+		rawMessage := types.Message{
+			Body: lo.ToPtr(faker.Word()),
+		}
+		gotErr := handler(context.Background(), rawMessage)
+		assert.Error(t, gotErr)
 	})
 }

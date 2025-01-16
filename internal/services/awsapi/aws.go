@@ -12,17 +12,19 @@ import (
 //go:generate mockery --name=MessageSender --filename=mock_message_sender.go --config ../../../.mockery-funcs.yaml
 
 type AWSConfigDeps struct {
-	dig.In
+	dig.In `ignore-unexported:"true"`
 
 	Region       string `name:"config.aws.region"`
 	BaseEndpoint string `name:"config.aws.baseEndpoint" optional:"true"`
+
+	loadOpts []func(*config.LoadOptions) error
 }
 
 func newAWSConfigFactory(ctx context.Context) func(deps AWSConfigDeps) (aws.Config, error) {
 	return func(deps AWSConfigDeps) (aws.Config, error) {
-		opts := []func(*config.LoadOptions) error{
+		opts := append([]func(*config.LoadOptions) error{
 			config.WithRegion(deps.Region),
-		}
+		}, deps.loadOpts...)
 		// BaseEndpoint is defined for local/test modes only and points on localstack instance
 		if deps.BaseEndpoint != "" {
 			opts = append(opts,

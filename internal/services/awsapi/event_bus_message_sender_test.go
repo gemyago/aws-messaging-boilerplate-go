@@ -3,6 +3,7 @@ package awsapi
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -10,8 +11,11 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/eventbridge"
+	"github.com/aws/smithy-go/middleware"
 	"github.com/gemyago/aws-messaging-boilerplate-go/internal/config"
 	"github.com/gemyago/aws-messaging-boilerplate-go/internal/diag"
+	"github.com/go-faker/faker/v4"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -58,5 +62,25 @@ func TestEventBusMessageSender(t *testing.T) {
 		case <-time.After(1 * time.Second):
 			require.Fail(t, "timeout waiting for message")
 		}
+	})
+
+	t.Run("send fail if sending failed", func(t *testing.T) {
+		wantErr := errors.New(faker.Sentence())
+		client := eventbridge.NewFromConfig(awsCfg, eventbridge.WithAPIOptions(
+			func(*middleware.Stack) error {
+				return wantErr
+			},
+		))
+		sender := NewEventBusMessageSender[testMessage](
+			appCfg.GetString("aws.eventBus.dummyMessagesDetailType"),
+			EventBusMessageSenderDeps{
+				EventBusName:   appCfg.GetString("aws.eventBus.name"),
+				EventBusSource: appCfg.GetString("aws.eventBus.source"),
+				RootLogger:     diag.RootTestLogger(),
+				Client:         client,
+			})
+		gotErr := sender(ctx, newRandomMessage())
+		require.Error(t, gotErr)
+		assert.ErrorIs(t, gotErr, wantErr)
 	})
 }
