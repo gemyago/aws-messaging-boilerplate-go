@@ -6,6 +6,9 @@ mockname: "mock{{.InterfaceName | camelcase}}"
 mock-build-tags: "!release"
 disable-version-string: true
 packages:
+  github.com/gemyago/aws-sqs-boilerplate-go/internal/queues:
+    interfaces:
+      messagePoller:
   github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/v1controllers:
     interfaces:
       dummyMessagesCommands:

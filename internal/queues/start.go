@@ -9,6 +9,11 @@ import (
 	"go.uber.org/dig"
 )
 
+type messagePoller interface {
+	RegisterQueue(queue awsapi.MessagesPollerQueue)
+	Start(ctx context.Context) error
+}
+
 type Deps struct {
 	dig.In
 
@@ -20,7 +25,7 @@ type Deps struct {
 	Commands *app.Commands
 
 	// services
-	*awsapi.MessagesPoller
+	MessagesPoller messagePoller
 	*services.ShutdownHooks
 }
 
