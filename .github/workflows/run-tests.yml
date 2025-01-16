@@ -20,7 +20,7 @@ jobs:
 
     - id: terraform-version
       name: Get terraform version
-      run: echo "terraform-version=$(cat terraform/.terraform-version)" >> $GITHUB_OUTPUT
+      run: echo "terraform-version=$(cat deploy/terraform/.terraform-version)" >> $GITHUB_OUTPUT
 
     - uses: hashicorp/setup-terraform@v3
       with:
