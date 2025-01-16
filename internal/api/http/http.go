@@ -35,7 +35,7 @@ func NewV1RoutesApp(deps V1RoutesAppDeps) *handlers.HTTPApp { // coverage-ignore
 	)
 }
 
-func Register(container *dig.Container) error { // coverage-ignore // Little value in testing wireup code.
+func Register(container *dig.Container) error {
 	return errors.Join(
 		v1controllers.Register(container),
 		di.ProvideAll(container,

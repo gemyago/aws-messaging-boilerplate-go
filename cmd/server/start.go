@@ -101,6 +101,7 @@ func newStartServerCmd(container *dig.Container) *cobra.Command {
 		return errors.Join(
 			server.Register(container),
 			http.Register(container),
+			queues.Register(container),
 		)
 	}
 	cmd.RunE = func(_ *cobra.Command, _ []string) error {
