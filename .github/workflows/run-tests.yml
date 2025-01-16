@@ -33,6 +33,7 @@ jobs:
         DEPLOY_ENV: ci
       run: |
         make lint_check
+        docker compose exec localstack awslocal s3api create-bucket --bucket terraform-local --region us-east-1
         make init
         make plan
         make apply

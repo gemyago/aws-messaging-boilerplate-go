@@ -28,22 +28,12 @@ Key features:
 
 Please have the following tools installed: 
 * [direnv](https://github.com/direnv/direnv) 
-* [pyenv](https://github.com/pyenv/pyenv?tab=readme-ov-file#installation)
 * [gobrew](https://github.com/kevincobain2000/gobrew#install-or-update)
 
 Python is required to run local setup script. 
 ```bash
-# Install required python version
-pyenv install -s
-
-# Setup virtual environment
-python -m venv .venv
-
 # Reload direnv
 direnv reload
-
-# Install python dependencies
-pip install -r requirements.txt
 ```
 
 Install/Update go dependencies: 
@@ -64,12 +54,16 @@ LocalStack is used to run AWS services locally. To setup and provision the requi
 # Start LocalStack
 docker compose up -d
 
-# Provision resources
-./scripts/localstack.py provision
+# Create terraform state bucket on localstack
+docker compose exec localstack awslocal s3api create-bucket --bucket terraform-local --region us-east-1
+
+# Provision local resources
 make -C deploy/terraform init
 make -C deploy/terraform plan
 make -C deploy/terraform apply
 ```
+
+You may want to repeat plan and apply steps if changing the configuration.
 
 ### Lint and Tests
 
@@ -111,8 +105,7 @@ aws sts get-caller-identity
 The deployment is done using terraform. If changing `providers.tf` or `versions.tf` for any environment, please make sure to produce updated lock file and commit changes.
 
 ```bash
-# Run below from deploy/terraform directory
-make providers_lock
+make -C deploy/terraform providers_lock
 ``` 
 
 ### Deployment
@@ -169,9 +162,6 @@ You may want to use aws specific environment variables for the deployment. You m
 ## Useful commands
 
 ```bash
-# Lock python dependencies (if updated)
-pip freeze > requirements.txt
-
 # Send custom event to AWS EventBridge
 # Use awslocal to send event to localstack
 aws events put-events --entries '[
