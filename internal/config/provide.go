@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/di"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/di"
 	"github.com/spf13/viper"
 	"go.uber.org/dig"
 )
@@ -23,6 +23,10 @@ func provideConfigValue(cfg *viper.Viper, path string) configValueProvider {
 
 func (p configValueProvider) asInt() di.ConstructorWithOpts {
 	return di.ProvideValue(p.cfg.GetInt(p.configPath), dig.Name(p.diPath))
+}
+
+func (p configValueProvider) asInt32() di.ConstructorWithOpts {
+	return di.ProvideValue(p.cfg.GetInt32(p.configPath), dig.Name(p.diPath))
 }
 
 func (p configValueProvider) asString() di.ConstructorWithOpts {
@@ -47,5 +51,16 @@ func Provide(container *dig.Container, cfg *viper.Viper) error {
 		provideConfigValue(cfg, "httpServer.readHeaderTimeout").asDuration(),
 		provideConfigValue(cfg, "httpServer.readTimeout").asDuration(),
 		provideConfigValue(cfg, "httpServer.writeTimeout").asDuration(),
+
+		// aws config
+		provideConfigValue(cfg, "aws.region").asString(),
+		provideConfigValue(cfg, "aws.baseEndpoint").asString(),
+		provideConfigValue(cfg, "aws.eventBus.name").asString(),
+		provideConfigValue(cfg, "aws.eventBus.source").asString(),
+		provideConfigValue(cfg, "aws.eventBus.dummyMessagesDetailType").asString(),
+		provideConfigValue(cfg, "aws.sns.dummyMessagesTopicArn").asString(),
+		provideConfigValue(cfg, "aws.sqs.maxPollWaitTimeSec").asInt32(),
+		provideConfigValue(cfg, "aws.sqs.dummyMessagesQueueUrl").asString(),
+		provideConfigValue(cfg, "aws.sqs.dummyMessagesQueueVisibilityTimeoutSec").asInt32(),
 	)
 }

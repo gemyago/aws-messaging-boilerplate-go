@@ -5,7 +5,7 @@ package services
 import (
 	"time"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/diag"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/diag"
 	"github.com/go-faker/faker/v4"
 )
 

@@ -14,6 +14,30 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Start dependencies
+      shell: bash
+      run: docker compose up -d
+
+    - id: terraform-version
+      name: Get terraform version
+      run: echo "terraform-version=$(cat deploy/terraform/.terraform-version)" >> $GITHUB_OUTPUT
+
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_wrapper: false
+        terraform_version: '${{ steps.terraform-version.outputs.terraform-version }}'
+
+    - name: Deploy CI env
+      working-directory: deploy/terraform
+      env:
+        DEPLOY_ENV: ci
+      run: |
+        make lint_check
+        docker compose exec localstack awslocal s3api create-bucket --bucket terraform-local --region us-east-1
+        make init
+        make plan
+        make apply
+
     - uses: actions/setup-go@v5
       with:
         go-version-file: 'go.mod'
@@ -29,6 +53,10 @@ jobs:
         version: '${{ steps.golangci-version.outputs.value }}'
 
     - run: make test
+
+    - name: Output localstack logs
+      if: failure()
+      run: docker compose logs
 
     - name: Store Test Artifacts
       uses: actions/upload-artifact@v4

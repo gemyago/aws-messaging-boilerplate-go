@@ -4,8 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/middleware"
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/api/http/routes"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/api/http/middleware"
 	sloghttp "github.com/samber/slog-http"
 	"go.uber.org/dig"
 )
@@ -14,14 +13,13 @@ type RootHandlerDeps struct {
 	dig.In
 
 	RootLogger *slog.Logger
-	Groups     []routes.MountFunc `group:"server"`
+	Groups     []RegisterHandlersFunc `group:"server"`
+	*MuxRouterAdapter
 }
 
 func NewRootHandler(deps RootHandlerDeps) http.Handler {
-	mux := http.NewServeMux()
-
 	for _, grp := range deps.Groups {
-		grp(mux)
+		grp()
 	}
 
 	// Router wire-up
@@ -41,5 +39,5 @@ func NewRootHandler(deps RootHandlerDeps) http.Handler {
 		}),
 		middleware.NewRecovererMiddleware(deps.RootLogger),
 	)
-	return chain(mux)
+	return chain(deps.MuxRouterAdapter.mux)
 }

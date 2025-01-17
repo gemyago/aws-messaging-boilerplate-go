@@ -1,3 +1,18 @@
 {
-  "defaultLogLevel": "DEBUG"
+  "defaultLogLevel": "DEBUG",
+  "httpServer": {
+    "port": 418080
+  },
+  "aws": {
+    "baseEndpoint": "http://localhost:4566",
+    "eventBus": {
+      "name": "test-app-events"
+    },
+    "sns": {
+      "dummyMessagesTopicArn": "arn:aws:sns:us-east-1:000000000000:test-dummy-messages"
+    },
+    "sqs": {
+      "dummyMessagesQueueUrl": "http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/test-aws-messaging-boilerplate-go-dummy-messages"
+    }
+  }
 }

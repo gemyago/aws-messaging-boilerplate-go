@@ -1,16 +1,22 @@
 package services
 
 import (
+	"context"
+	"errors"
 	"time"
 
-	"github.com/gemyago/aws-sqs-boilerplate-go/internal/di"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/di"
+	"github.com/gemyago/aws-messaging-boilerplate-go/internal/services/awsapi"
 	"go.uber.org/dig"
 )
 
-func Register(container *dig.Container) error {
-	return di.ProvideAll(container,
-		NewTimeProvider,
-		di.ProvideValue(time.NewTicker),
-		NewShutdownHooks,
+func Register(rootCtx context.Context, container *dig.Container) error {
+	return errors.Join(
+		awsapi.Register(rootCtx, container),
+		di.ProvideAll(container,
+			NewTimeProvider,
+			di.ProvideValue(time.NewTicker),
+			NewShutdownHooks,
+		),
 	)
 }

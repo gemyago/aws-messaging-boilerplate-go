@@ -2,7 +2,7 @@
 
 # (optional; but recommended to set) 
 # When specified reported file paths will not contain local prefix in the output
-local-prefix: "github.com/gemyago/aws-sqs-boilerplate-go"
+local-prefix: "github.com/gemyago/aws-messaging-boilerplate-go"
 
 # Holds coverage thresholds percentages, values should be in range [0-100]
 threshold:
@@ -23,5 +23,6 @@ threshold:
 exclude:
   # Exclude files or packages matching their paths
   paths:
+    - internal/api/http/v1routes/.* # generated code
     - testing.go
     - mock_.*.go

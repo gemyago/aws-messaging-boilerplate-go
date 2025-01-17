@@ -1,0 +1,6 @@
+# This is a minimal configuration to generate mocks for functions
+# due to mockery not supporting functions in "packages" config yet.
+# Mocked functions have to be generated with go generate command.
+with-expecter: true
+inpackage: true
+mock-build-tags: "!release"

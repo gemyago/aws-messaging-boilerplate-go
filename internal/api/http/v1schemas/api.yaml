@@ -1,0 +1,104 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Example API to publish and consume messages using AWS messaging services
+  description: |
+    The definition includes API endpoint to publish a message and consume 
+    the message from AWS SQS routed via EventBridge.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://localhost:8080
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      operationId: healthCheck
+      tags:
+        - messages
+      responses:
+        '204':
+          description: Request succeeded
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /dummy-messages/publish:
+    post:
+      summary: Publish dummy message
+      operationId: publishDummyMessage
+      tags:
+        - messages
+      parameters:
+        - name: target
+          in: query
+          description: Target to publish the message to
+          required: true
+          schema:
+            type: string
+            enum:
+              - SNS
+              - EVENT_BRIDGE
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DummyMessage'
+        required: true
+      responses:
+        '202':
+          description: Request succeeded
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /dummy-messages/process:
+    post:
+      summary: Process dummy message
+      operationId: processDummyMessage
+      tags:
+        - messages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DummyMessage'
+        required: true
+      responses:
+        '204':
+          description: Request succeeded
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    DummyMessage:
+      type: object
+      description: Simple message object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+        failProcessing:
+          type: boolean
+          description: |
+            If true, the message processing will fail.
+            Use this to test error handling, retries and DLQ.
+    Error:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          format: string
+        message:
+          type: string

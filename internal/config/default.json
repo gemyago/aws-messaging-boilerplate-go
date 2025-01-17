@@ -7,5 +7,22 @@
     "readHeaderTimeout": "2s",
     "readTimeout": "2s",
     "writeTimeout": "8s"
+  },
+  "aws": {
+    "baseEndpoint": "",
+    "region": "us-east-1",
+    "eventBus": {
+      "name": "set via env var: APP_EVENT_BUS_NAME",
+      "source": "aws-messaging-boilerplate-go",
+      "dummyMessagesDetailType": "dummy-message"
+    },
+    "sns": {
+      "dummyMessagesTopicArn": "set via env var: APP_SNS_MESSAGES_TOPIC_ARN"
+    },
+    "sqs": {
+      "maxPollWaitTimeSec": 20,
+      "dummyMessagesQueueUrl": "set via env var: APP_SQS_MESSAGES_QUEUE_URL",
+      "dummyMessagesQueueVisibilityTimeoutSec": 10
+    }
   }
 }

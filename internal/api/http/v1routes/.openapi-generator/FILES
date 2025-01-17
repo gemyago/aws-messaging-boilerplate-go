@@ -1,0 +1,8 @@
+handlers/handlers.go
+handlers/messages_controller.go
+handlers/messages_params.go
+internal/dummy_message_validation.go
+internal/error_validation.go
+internal/validators.go
+models/dummy_message.go
+models/error.go
